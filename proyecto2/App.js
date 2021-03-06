@@ -67,7 +67,7 @@ const App: () => React$Node = () => {
       method: 'POST',
       body: {
         userId: success,
-        time: '19:25'
+        time: '19:39'
       },
       headers:{
         'Content-Type': 'application/json'

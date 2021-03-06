@@ -8,7 +8,8 @@ const port = process.env.PORT || 8000;
 let pushWooshRoutes = require('./routers/pushWooshRoutes');
 
 app.use(cors({
-    credentials: true
+    credentials: true,
+    origin: 'http://localhost'
   }));
 app.use(express.json());
 
