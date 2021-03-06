@@ -63,7 +63,16 @@ const App: () => React$Node = () => {
   });
   Pushwoosh.register((success, fail) => {
     Pushwoosh.setUserId(success);
-    fetch('http://localhost')
+    fetch('https://moviles-proyecto2.herokuapp.com/notifications', {
+      method: 'POST',
+      body: {
+        userId: success,
+        time: '19:25'
+      },
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    })
   });
 
   // this event is fired when the push is received in the app
