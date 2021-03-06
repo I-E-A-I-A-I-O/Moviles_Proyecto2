@@ -63,6 +63,7 @@ const App: () => React$Node = () => {
   });
   Pushwoosh.register((success, fail) => {
     Pushwoosh.setUserId(success);
+    fetch('http://localhost')
   });
 
   // this event is fired when the push is received in the app
