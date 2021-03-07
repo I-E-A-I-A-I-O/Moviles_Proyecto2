@@ -1,27 +1,20 @@
-const { response } = require('express');
 const PW = require('pushwoosh-client');
 
+const PWClient = new PW(process.env.APP_CODE, process.env.API_KEY);
+
 const registerClient = (req, res) => {
-    try{
-        const userId = req.body.UserId;
-        const time = req.body.time;
-        const PWClient = new PW(process.env.APP_CODE, process.env.API_KEY);
-        PWClient.sendMessage('IT WORKED!!!', userId, {send_date: `2021-03-06 ${time}`, timezone: 'America/Caracas'}, (error, response) => {
-            if (error){
-                console.log('PUSH ERROR');
-                console.log(error);
-                res.status(500).json({title: 'Error', content: 'Not nice'});
-            }
-            else{
-                console.log(response);
-                res.status(200).json({title: 'Success', content: 'NICE!!!'});
-            }
-        });
-    }catch(e){
-        console.log('CATCH')
-        console.log(e);
-        res.status(500).send(e.message);
-    }
+    const userId = req.body.userId;
+    const time = req.body.time;
+    PWClient.sendMessage('IT WORKED!!!', [userId], {send_date: `2021-03-06 ${time}`, timezone: 'America/Caracas'}, (error, response) => {
+        if (error){
+            console.log(error);
+            res.status(500).json({title: 'Error', content: 'Not nice'});
+        }
+        else{
+            console.log(response);
+            res.status(200).json({title: 'Success', content: 'NICE!!!'});
+        }
+    });
 }
 
 module.exports = {

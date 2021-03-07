@@ -4,7 +4,9 @@ import {Button} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
-function DetailsScreen({navigation}) {
+function DetailsScreen({route, navigation}) {
+  const {deviceToken} = route.params;
+  console.log('THE TOKEN ISSSSS ' + deviceToken);
   return (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text>Details Screen</Text>

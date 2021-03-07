@@ -16,10 +16,15 @@ import Example from './pages/example';
 import {Notifications} from 'react-native-notifications';
 import Pushwoosh from 'pushwoosh-react-native-plugin';
 
+import { PersistGate } from 'redux-persist/es/integration/react';
+import { Provider, connect } from 'react-redux';
+import { store, persistor } from './store/store';
+
 const Stack = createStackNavigator();
 
 const App: () => React$Node = () => {
   const scheme = useColorScheme();
+
   Notifications.registerRemoteNotifications();
 
   Notifications.events().registerNotificationReceivedForeground(
@@ -63,12 +68,10 @@ const App: () => React$Node = () => {
   });
   Pushwoosh.register((success, fail) => {
     Pushwoosh.setUserId(success);
-    fetch('https://moviles-proyecto2.herokuapp.com/notifications', {
+    let body = {userId: success, time: '23:59'};
+    fetch('http://192.168.0.101:8000/notifications', {
       method: 'POST',
-      body: {
-        userId: success,
-        time: '19:58'
-      },
+      body: JSON.stringify(body),
       headers:{
         'Content-Type': 'application/json'
       }
@@ -91,25 +94,30 @@ const App: () => React$Node = () => {
   });
 
   return (
-    <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack.Navigator initialRouteName="Details">
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{gestureEnabled: true, title: 'Groove stree, home'}}
-        />
-        <Stack.Screen
-          name="Details"
-          component={Details}
-          options={{title: 'MAFAKA'}}
-        />
-        <Stack.Screen
-          name="Example"
-          component={Example}
-          options={{title: 'Drag and drop example'}}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store} >
+      <PersistGate loading={null} persistor={persistor} >
+        <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack.Navigator initialRouteName="Details">
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{gestureEnabled: true, title: 'Groove stree, home'}}
+            />
+            <Stack.Screen
+              name="Details"
+              component={Details}
+              options={{title: 'MAFAKA'}}
+              initialParams={{deviceToken: deviceToken}}
+            />
+            <Stack.Screen
+              name="Example"
+              component={Example}
+              options={{title: 'Drag and drop example'}}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PersistGate>
+    </Provider>
   );
 };
 
