@@ -8,8 +8,9 @@ const registerClient = (req, res) => {
         const PWClient = new PW(process.env.APP_CODE, process.env.API_KEY);
         PWClient.sendMessage('IT WORKED!!!', userId, {send_date: `2021-03-06 ${time}`, timezone: 'America/Caracas'}, (error, response) => {
             if (error){
+                console.log('PUSH ERROR');
                 console.log(error);
-                res.status(200).json({title: 'Error', content: 'Not nice'});
+                res.status(500).json({title: 'Error', content: 'Not nice'});
             }
             else{
                 console.log(response);
@@ -17,6 +18,7 @@ const registerClient = (req, res) => {
             }
         });
     }catch(e){
+        console.log('CATCH')
         console.log(e);
         res.status(500).send(e.message);
     }
