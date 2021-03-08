@@ -8,6 +8,7 @@ const port = process.env.PORT || 8000;
 let whitelist = ['http://localhost']
 
 let pushWooshRoutes = require('./routers/pushWooshRoutes');
+let userAuthenticationRoutes = require('./routers/userAuth');
 
 app.use(cors({
     credentials: true,
@@ -22,6 +23,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use('/notifications', pushWooshRoutes);
+app.use('/users', userAuthenticationRoutes);
 
 app.listen(port, () => {
     console.log(`Server running in port ${port}`);

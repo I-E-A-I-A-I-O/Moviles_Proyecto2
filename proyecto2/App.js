@@ -1,23 +1,21 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import {Button, useColorScheme, DeviceEventEmitter} from 'react-native';
+import {useColorScheme, DeviceEventEmitter} from 'react-native';
 
 import {
   NavigationContainer,
-  DarkTheme,
-  DefaultTheme,
+  DarkTheme
 } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-
-import Home from './pages/home';
-import Details from './pages/details';
-import Example from './pages/example';
 
 import {Notifications} from 'react-native-notifications';
 import Pushwoosh from 'pushwoosh-react-native-plugin';
 
+import Login from './pages/Login';
+import Register from './pages/Register';
+
 import { PersistGate } from 'redux-persist/es/integration/react';
-import { Provider, connect } from 'react-redux';
+import { Provider } from 'react-redux';
 import { store, persistor } from './store/store';
 
 const Stack = createStackNavigator();
@@ -96,24 +94,10 @@ const App: () => React$Node = () => {
   return (
     <Provider store={store} >
       <PersistGate loading={null} persistor={persistor} >
-        <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack.Navigator initialRouteName="Details">
-            <Stack.Screen
-              name="Home"
-              component={Home}
-              options={{gestureEnabled: true, title: 'Groove stree, home'}}
-            />
-            <Stack.Screen
-              name="Details"
-              component={Details}
-              options={{title: 'MAFAKA'}}
-              initialParams={{deviceToken: deviceToken}}
-            />
-            <Stack.Screen
-              name="Example"
-              component={Example}
-              options={{title: 'Drag and drop example'}}
-            />
+        <NavigationContainer theme={DarkTheme}>
+          <Stack.Navigator initialRouteName='login' >
+            <Stack.Screen name={'Login'} component={Login} options={{title: ''}} />
+            <Stack.Screen name={'Register'} component={Register} options={{title: 'Create a new account'}} />
           </Stack.Navigator>
         </NavigationContainer>
       </PersistGate>
