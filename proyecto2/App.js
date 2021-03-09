@@ -1,18 +1,17 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import {useColorScheme, DeviceEventEmitter} from 'react-native';
+import { DeviceEventEmitter } from 'react-native';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 
-import {
-  NavigationContainer,
-  DarkTheme
-} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import {Notifications} from 'react-native-notifications';
+import { Notifications } from 'react-native-notifications';
 import Pushwoosh from 'pushwoosh-react-native-plugin';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
+
+import ModalsStack from './pages/modalsStack';
 
 import { PersistGate } from 'redux-persist/es/integration/react';
 import { Provider } from 'react-redux';
@@ -21,7 +20,6 @@ import { store, persistor } from './store/store';
 const Stack = createStackNavigator();
 
 const App: () => React$Node = () => {
-  const scheme = useColorScheme();
 
   Notifications.registerRemoteNotifications();
 
@@ -34,7 +32,7 @@ const App: () => React$Node = () => {
         body: notification.body,
         title: notification.title,
       });
-      completion({alert: false, sound: false, badge: false});
+      completion({ alert: false, sound: false, badge: false });
     },
   );
 
@@ -66,17 +64,17 @@ const App: () => React$Node = () => {
   });
   Pushwoosh.register((success, fail) => {
     Pushwoosh.setUserId(success);
-    let body = {userId: success, time: '23:59'};
+    let body = { userId: success, time: '23:59' };
     fetch('http://192.168.0.101:8000/notifications', {
       method: 'POST',
       body: JSON.stringify(body),
-      headers:{
+      headers: {
         'Content-Type': 'application/json'
       }
     }).then(response => response.json())
-    .then(json => {
-      console.log(json);
-    })
+      .then(json => {
+        console.log(json);
+      })
   });
 
   // this event is fired when the push is received in the app
@@ -96,8 +94,10 @@ const App: () => React$Node = () => {
       <PersistGate loading={null} persistor={persistor} >
         <NavigationContainer theme={DarkTheme}>
           <Stack.Navigator initialRouteName='login' >
-            <Stack.Screen name={'Login'} component={Login} options={{title: ''}} />
-            <Stack.Screen name={'Register'} component={Register} options={{title: 'Create a new account'}} />
+            <Stack.Screen name={'Login'} component={Login} options={{ title: '' }} />
+            <Stack.Screen name={'Register'} component={Register} options={{ title: 'Create a new account' }} />
+            <Stack.Screen name={'ModalsStack'} component={ModalsStack}
+              options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
       </PersistGate>

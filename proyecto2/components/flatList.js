@@ -1,5 +1,5 @@
-import React, {useState, useCallback} from 'react';
-import {View, TouchableOpacity, Text} from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, TouchableOpacity, Text, Pressable } from 'react-native';
 import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist';
@@ -27,13 +27,13 @@ type Item = {
   backgroundColor: string,
 };
 
-function Example() {
+function FlatList() {
   const [data, setData] = useState(exampleData);
 
   const renderItem = useCallback(
-    ({item, index, drag, isActive}: RenderItemParams<Item>) => {
+    ({ item, index, drag, isActive }: RenderItemParams<Item>) => {
       return (
-        <TouchableOpacity
+        <Pressable
           style={{
             height: 100,
             backgroundColor: isActive ? 'red' : item.backgroundColor,
@@ -49,31 +49,29 @@ function Example() {
             }}>
             index: {index}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       );
     },
     [],
   );
 
   return (
-    <View style={{flex: 1}}>
-      <DraggableFlatList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => `draggable-item-${item.key}`}
-        onDragEnd={({data, from, to}) => {
-          if (from !== to) {
-            data[to].label = 'index: ' + to;
-            alert(JSON.stringify(data[to]));
-          } else {
-            alert(JSON.stringify(data[from]));
-          }
-          setData(data);
-          //alert('from: ' + from + ' to: ' + to);
-        }}
-      />
-    </View>
+    <DraggableFlatList
+      data={data}
+      renderItem={renderItem}
+      keyExtractor={(item, index) => `draggable-item-${item.key}`}
+      onDragEnd={({ data, from, to }) => {
+        if (from !== to) {
+          data[to].label = 'index: ' + to;
+          alert(JSON.stringify(data[to]));
+        } else {
+          alert(JSON.stringify(data[from]));
+        }
+        setData(data);
+        //alert('from: ' + from + ' to: ' + to);
+      }}
+    />
   );
 }
 
-export default Example;
+export default FlatList;

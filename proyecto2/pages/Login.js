@@ -1,39 +1,41 @@
-import React, {useState} from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, View, ToastAndroid } from 'react-native';
 import { Text, Input, Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/Ionicons';
+import { connect } from 'react-redux';
+import { saveSessionToken } from '../actions/saveSessionToken';
 
-function loginPage({navigation}) {
+function loginPage({ navigation, reduxSaveSessionToken }) {
 
     const [loading, setLoading] = useState(false);
     const [buttonTitle, setButtonTitle] = useState('Login');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
 
-    return(
-        <View style={{flex: 1, top: '25%'}} >
+    return (
+        <View style={{ flex: 1, top: '25%' }} >
             <Text style={styles.title} >Task manager</Text>
             <Input
                 onChange={(e) => {
                     setName(e.nativeEvent.text);
                 }}
-                placeholder={'Name'} label={'Name'} selectionColor={'lime'} 
-                style={styles.textFields} leftIcon={<Icon name={'person'} 
-                color={'lime'} size={18} />}
+                placeholder={'Name'} label={'Name'} selectionColor={'lime'}
+                style={styles.textFields} leftIcon={<Icon name={'person'}
+                    color={'lime'} size={18} />}
             />
-            <Input 
+            <Input
                 onChange={(e) => {
                     setPassword(e.nativeEvent.text);
                 }}
                 secureTextEntry={true} label={'Password'} selectionColor={'lime'}
-                style={styles.textFields} leftIcon={<Icon name={'lock-closed'} 
-                color={'lime'} size={18} />}
+                style={styles.textFields} leftIcon={<Icon name={'lock-closed'}
+                    color={'lime'} size={18} />}
                 placeholder={'Password'}
             />
-            <Button 
-                title={buttonTitle} 
-                disabled={loading} 
-                icon={<ActivityIndicator color={'lime'} animating={loading} />} 
+            <Button
+                title={buttonTitle}
+                disabled={loading}
+                icon={<ActivityIndicator color={'lime'} animating={loading} />}
                 onPress={() => {
                     setLoading(true);
                     setButtonTitle('');
@@ -44,10 +46,20 @@ function loginPage({navigation}) {
                     loginRequest(data).then(json => {
                         setButtonTitle('Login');
                         setLoading(false);
+                        if (json.title !== 'Success') {
+                            ToastAndroid.showWithGravity(json.content, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                        }
+                        else {
+                            reduxSaveSessionToken(json.content);
+                            navigation.navigate('ModalsStack');
+                        }
+                    }).catch(err => {
+                        console.log(err);
+                        ToastAndroid.showWithGravity('Network error. Check internet connection.', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                     })
                 }}
             />
-            <Text 
+            <Text
                 style={styles.createAccount}
                 onPress={() => {
                     navigation.navigate('Register');
@@ -75,14 +87,14 @@ const styles = {
     textFields: {
         color: '#6699FF'
     },
-    title:{
+    title: {
         color: 'lime',
         textAlign: 'center',
         fontSize: 28,
         bottom: '8%',
         position: 'relative'
     },
-    createAccount:{
+    createAccount: {
         color: 'lime',
         fontSize: 15,
         left: '2%',
@@ -91,4 +103,12 @@ const styles = {
     }
 }
 
-export default loginPage;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        reduxSaveSessionToken: (sessionToken) => {
+            dispatch(saveSessionToken(sessionToken));
+        }
+    }
+}
+
+export default connect(null, mapDispatchToProps)(loginPage);
