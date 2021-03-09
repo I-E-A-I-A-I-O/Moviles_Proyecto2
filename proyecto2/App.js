@@ -64,7 +64,7 @@ const App: () => React$Node = () => {
   });
   Pushwoosh.register((success, fail) => {
     Pushwoosh.setUserId(success);
-    let body = { userId: success, time: '23:59' };
+    let body = { userId: success, time: '18:12' };
     fetch('http://192.168.0.101:8000/notifications', {
       method: 'POST',
       body: JSON.stringify(body),

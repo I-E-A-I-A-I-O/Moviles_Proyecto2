@@ -10,6 +10,7 @@ let whitelist = ['http://localhost']
 let pushWooshRoutes = require('./routers/pushWooshRoutes');
 let userAuthenticationRoutes = require('./routers/userAuth');
 let userDataRoutes = require('./routers/userData');
+let taskRoutes = require('./routers/taskRoutes');
 
 app.use(cors({
     credentials: true,
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use('/notifications', pushWooshRoutes);
 app.use('/users', userAuthenticationRoutes);
 app.use('/users', userDataRoutes);
+app.use('/tasks', taskRoutes);
 
 app.listen(port, () => {
     console.log(`Server running in port ${port}`);

@@ -4,13 +4,34 @@ import { Text, Input, Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { connect } from 'react-redux';
 import { saveSessionToken } from '../actions/saveSessionToken';
+import { saveUserData } from '../actions/saveUserData';
 
-function loginPage({ navigation, reduxSaveSessionToken }) {
+function loginPage({ navigation, reduxSaveSessionToken, reduxUserData }) {
 
     const [loading, setLoading] = useState(false);
     const [buttonTitle, setButtonTitle] = useState('Login');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
+
+    const fetchProfile = async (token) => {
+        let response = await fetch('http://192.168.0.101:8000/users/user', {
+            method: 'GET',
+            headers: {
+                'authToken': token
+            }
+        }).catch(err => {
+            console.log(err);
+            ToastAndroid.showWithGravity('Network error. Check internet connection.', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+        });
+        let json = await response.json();
+        if (json.title !== 'Error'){
+            reduxUserData(json.content);
+            navigation.navigate('ModalsStack');
+        }
+        else{
+            ToastAndroid.showWithGravity(json.content, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+        }
+    }
 
     return (
         <View style={{ flex: 1, top: '25%' }} >
@@ -51,7 +72,7 @@ function loginPage({ navigation, reduxSaveSessionToken }) {
                         }
                         else {
                             reduxSaveSessionToken(json.content);
-                            navigation.navigate('ModalsStack');
+                            fetchProfile(json.content);
                         }
                     }).catch(err => {
                         console.log(err);
@@ -107,6 +128,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         reduxSaveSessionToken: (sessionToken) => {
             dispatch(saveSessionToken(sessionToken));
+        },
+        reduxUserData: (userData) => {
+            dispatch(saveUserData(userData));
         }
     }
 }
