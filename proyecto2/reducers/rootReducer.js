@@ -4,30 +4,37 @@ const initialState = {
     userData: {
         name: '',
         avatar: ''
-    }
+    },
+    tasksData: []
 };
 
 export default (state = initialState, action) => {
-    switch(action.type){
-        case 'SAVE_DEVICE_TOKEN':{
+    switch (action.type) {
+        case 'SAVE_DEVICE_TOKEN': {
             return {
                 ...state,
                 deviceToken: action.deviceToken
             }
         }
-        case 'SAVE_SESSION_TOKEN':{
+        case 'SAVE_SESSION_TOKEN': {
             return {
                 ...state,
                 sessionToken: action.sessionToken
             }
         }
-        case 'SAVE_USER_DATA':{
+        case 'SAVE_USER_DATA': {
             return {
                 ...state,
                 userData: action.userData
             }
         }
-        default:{
+        case 'SAVE_TASKS_DATA': {
+            return {
+                ...state,
+                tasksData: action.tasksData
+            }
+        }
+        default: {
             return state;
         }
     }

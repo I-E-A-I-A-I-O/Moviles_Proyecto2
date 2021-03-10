@@ -39,7 +39,6 @@ function CreateTask({ navigation, sessionToken }) {
     const imageInput = (data) => {
         setType(data.type);
         setFileURI(data.uri);
-        alert(JSON.stringify(data));
     };
     const saveTask = () => {
         Pushwoosh.getPushToken(function (token) {
@@ -87,12 +86,15 @@ function CreateTask({ navigation, sessionToken }) {
                 <Card.Divider />
                 <Input label={'Task name'}
                     onChange={(e) => (setTaskName(e.nativeEvent.text))}
+                    style={{color: 'lime'}}
                 />
                 <Input label={'Task description'} multiline={true}
                     onChange={(e) => (setTaskDescription(e.nativeEvent.text))}
+                    style={{color: 'lime'}}
                 />
                 <Input label={'Tag'}
                     onChange={(e) => (setTaskTag(e.nativeEvent.text))}
+                    style={{color: 'lime'}}
                 />
                 <Pressable onPress={() => (showDatepicker('date'))} >
                     <Input disabled={true} label={'Date'} value={date.toISOString().split('T')[0]}

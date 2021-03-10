@@ -1,6 +1,7 @@
 const db = require('../helpers/database');
 const jwt = require('../helpers/token');
 const mp = require('multiparty');
+const fse = require('fs-extra');
 const { getClient } = require('./pushWooshAPI');
 
 const saveTask = async (req, res) => {
@@ -76,9 +77,7 @@ const insertTaskData = async (userId, pushToken, name, description, tag, date, t
         let result = await client.query(query, params);
         getClient().sendMessage(name, [pushToken], { send_date: `${date} ${time}`, timezone: 'America/Caracas', data: { task_id: result.rows[0].task_id } }, (error, response) => {
             if (!error) {
-                query = 'INSERT INTO current_tasks(task_id, message_code) VALUES($1, $2)';
-                params = [result.rows[0].task_id, response.Messages[0]];
-                client.query(query, params);
+                insertOrder(client, result.rows[0].task_id, response.Messages[0]);
                 if (file) {
                     saveImage(file, userId, result.rows[0].task_id);
                 }
@@ -91,6 +90,17 @@ const insertTaskData = async (userId, pushToken, name, description, tag, date, t
     } finally {
         client.release();
     }
+}
+
+const insertOrder = async (client, task_id, message_code) => {
+    let query = 'INSERT INTO current_tasks(task_id, message_code) VALUES($1, $2) RETURNING current_task_id';
+    let params = [task_id, message_code];
+    let saveResult = await client.query(query, params);
+    query = 'SELECT count(order_id) FROM task_order';
+    let countResult = await client.query(query, []);
+    query = 'INSERT INTO task_order(current_task_id, list_index) VALUES($1, $2)';
+    params = [saveResult.rows[0].current_task_id, countResult.rows[0].count];
+    client.query(query, params);
 }
 
 const verifyFields = (name, description, tag) => {
