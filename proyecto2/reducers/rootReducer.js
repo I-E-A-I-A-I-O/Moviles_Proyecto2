@@ -5,7 +5,8 @@ const initialState = {
         name: '',
         avatar: ''
     },
-    tasksData: []
+    tasksData: [],
+    pinnedTasks: []
 };
 
 export default (state = initialState, action) => {
@@ -32,6 +33,12 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 tasksData: action.tasksData
+            }
+        }
+        case 'SAVE_PINNED_TASKS': {
+            return {
+                ...state,
+                pinnedTasks: action.pinnedTasks
             }
         }
         default: {

@@ -1,85 +1,49 @@
 import 'react-native-gesture-handler';
-import React from 'react';
-import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 
-import { createStackNavigator } from '@react-navigation/stack';
+import { Notifications} from 'react-native-notifications';
 
-import { Notifications } from 'react-native-notifications';
+Notifications.events().registerNotificationReceivedForeground((notification, completion) => {
+  let id = JSON.parse(notification.payload.u).task_id;
+  completeTask(id);
+  Notifications.postLocalNotification({title: notification.title})
+  completion({alert: true, sound: true, badge: true});
+})
+
+Notifications.events().registerNotificationReceivedBackground((notification, completion) => {
+  let id = JSON.parse(notification.payload.u).task_id;
+  completeTask(id);
+})
+
+const completeTask = async (taskId) => {
+  fetch(`http://192.168.0.101:8000/tasks/task/${taskId}`, {
+    method: 'PUT'
+  }).catch(err => {
+    console.error(err);
+  });
+}
 
 import Pushwoosh from 'pushwoosh-react-native-plugin';
 
+Pushwoosh.init({
+  pw_appid: '6F321-F45AD',
+  project_number: '667393835268',
+});
+Pushwoosh.register((success, fail) => { });
+
+import React from 'react';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Login from './pages/Login';
 import Register from './pages/Register';
-
 import ModalsStack from './pages/modalsStack';
-
 import { PersistGate } from 'redux-persist/es/integration/react';
 import { Provider } from 'react-redux';
 import { store, persistor } from './store/store';
+import { not } from 'react-native-reanimated';
 
 const Stack = createStackNavigator();
 
 const App: () => React$Node = () => {
-
-  Notifications.registerRemoteNotifications();
-
-  Notifications.events().registerNotificationReceivedForeground(
-    (notification: Notification, completion) => {
-      let u = JSON.parse(notification.payload.u);
-      console.log(
-        `Notification received in foreground: ${notification.title} : ${u.task_id}`,
-      );
-      Notifications.postLocalNotification({
-        title: notification.title
-      });
-      completeTask(u.task_id);
-    },
-  );
-
-  Notifications.events().registerNotificationReceivedBackground(
-    (notification: Notification, completion) => {
-      let u = JSON.parse(notification.payload.u);
-      console.log(
-        `Notification received in background: ${notification.title} : ${u.task_id}`,
-      );
-      completion({ alert: true, sound: true, badge: true });
-      completeTask(u.task_id);
-    }
-  );
-
-  Notifications.events().registerNotificationOpened(
-    (notification: Notification, completion) => {
-      console.log(`Notification opened: ${notification.payload}`);
-      completion();
-    },
-  );
-
-  // Request permissions on iOS, refresh token on Android
-  Notifications.registerRemoteNotifications();
-
-  Notifications.events().registerRemoteNotificationsRegistered(
-    (event: Registered) => {
-      // TODO: Send the token to my server so it could send back push notifications...
-      console.log('Device Token Received', event.deviceToken);
-    },
-  );
-  Notifications.events().registerRemoteNotificationsRegistrationFailed(
-    (event: RegistrationError) => {
-      console.error(event);
-    },
-  );
-
-  Pushwoosh.init({
-    pw_appid: '6F321-F45AD',
-    project_number: '667393835268',
-  });
-  Pushwoosh.register((success, fail) => { });
-
-  const completeTask = (taskId) =>{
-    fetch(`http://192.168.0.101:8000/tasks/task/${taskId}`, {
-      method: 'PUT'
-    });
-  }
 
   return (
     <Provider store={store} >

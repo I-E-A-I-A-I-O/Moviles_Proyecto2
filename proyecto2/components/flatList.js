@@ -1,54 +1,55 @@
 import React, { useState, useCallback } from 'react';
-import { View, TouchableOpacity, Text, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
+import { connect } from 'react-redux';
+import IonIcons from 'react-native-vector-icons/FontAwesome5';
+import { Text, Tooltip } from 'react-native-elements';
+import { saveTasksData } from '../actions/saveTasksData';
+
 import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist';
 
-const NUM_ITEMS = 10;
+function FlatList({ tasks, reduxSaveReorder }) {
 
-function getColor(i: number) {
-  const multiplier = 255 / (NUM_ITEMS - 1);
-  const colorVal = i * multiplier;
-  return `rgb(${colorVal}, ${Math.abs(128 - colorVal)}, ${255 - colorVal})`;
-}
-
-const exampleData: Item[] = [...Array(20)].map((d, index) => {
-  const backgroundColor = getColor(index);
-  return {
-    key: `item-${backgroundColor}`,
-    label: String(index),
-    backgroundColor,
+  type Task = {
+    task_id: string,
+    name: string,
+    tag: string,
+    list_index: number
   };
-});
-
-type Item = {
-  key: string,
-  label: string,
-  backgroundColor: string,
-};
-
-function FlatList() {
-  const [data, setData] = useState(exampleData);
 
   const renderItem = useCallback(
-    ({ item, index, drag, isActive }: RenderItemParams<Item>) => {
+    ({ item, index, drag, isActive }: RenderItemParams<Task>) => {
       return (
         <Pressable
           style={{
-            height: 100,
-            backgroundColor: isActive ? 'red' : item.backgroundColor,
-            alignItems: 'center',
+            height: 70,
+            backgroundColor: isActive ? '#747f91' : '#3e443d',
             justifyContent: 'center',
+            borderColor: 'black',
+            borderStyle: 'solid',
+            borderWidth: .5,
+            borderRadius: 5
           }}
+          android_ripple={{ color: 'white' }}
+          focusable={true}
           onLongPress={drag}>
           <Text
             style={{
               fontWeight: 'bold',
               color: 'white',
               fontSize: 32,
+              alignSelf: 'flex-start',
+              paddingLeft: 15
             }}>
-            index: {index}
+            {item.name}
           </Text>
+          <Text
+            style={{fontWeight: 'bold', color:'#d3e5b5', position: 'absolute', left:'60%'}}
+          >
+            {item.tag.length > 0 ? item.tag : 'No tag'}
+          </Text>
+          <IonIcons style={{ alignSelf: 'flex-end', position: 'absolute', top: '30%', right: '2%' }} name={'star'} color={'gold'} size={30} />
         </Pressable>
       );
     },
@@ -57,21 +58,37 @@ function FlatList() {
 
   return (
     <DraggableFlatList
-      data={data}
+      data={tasks}
       renderItem={renderItem}
-      keyExtractor={(item, index) => `draggable-item-${item.key}`}
+      keyExtractor={(item, index) => `draggable-item-${item.task_id}`}
       onDragEnd={({ data, from, to }) => {
         if (from !== to) {
-          data[to].label = 'index: ' + to;
-          alert(JSON.stringify(data[to]));
-        } else {
-          alert(JSON.stringify(data[from]));
+          moveIndexes(data);
+          reduxSaveReorder(data);
         }
-        setData(data);
-        //alert('from: ' + from + ' to: ' + to);
       }}
     />
   );
 }
 
-export default FlatList;
+const moveIndexes = (array) => {
+  for (let i = 0; i < array.length; i++) {
+    array[i].list_index = i;
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    tasks: state.tasksData
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    reduxSaveReorder: (newArray) => {
+      dispatch(saveTasksData(newArray));
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FlatList);

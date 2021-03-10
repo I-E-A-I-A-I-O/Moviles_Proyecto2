@@ -96,10 +96,11 @@ const insertOrder = async (client, task_id, message_code) => {
     let query = 'INSERT INTO current_tasks(task_id, message_code) VALUES($1, $2) RETURNING current_task_id';
     let params = [task_id, message_code];
     let saveResult = await client.query(query, params);
-    query = 'SELECT count(order_id) FROM task_order';
+    query = 'SELECT list_index FROM task_order order by list_index desc';
     let countResult = await client.query(query, []);
+    let index = countResult.rowCount > 0 ? countResult.rows[0].list_index + 1 : 0;
     query = 'INSERT INTO task_order(current_task_id, list_index) VALUES($1, $2)';
-    params = [saveResult.rows[0].current_task_id, countResult.rows[0].count];
+    params = [saveResult.rows[0].current_task_id, index];
     client.query(query, params);
 }
 

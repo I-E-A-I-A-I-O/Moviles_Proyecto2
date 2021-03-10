@@ -5,9 +5,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { connect } from 'react-redux';
 import { saveSessionToken } from '../actions/saveSessionToken';
 import { saveUserData } from '../actions/saveUserData';
+import { saveTasksData } from '../actions/saveTasksData';
+import { savePinnedTasks } from '../actions/savePinnedTasks';
 import Pushwoosh from 'pushwoosh-react-native-plugin';
+import { fetchTasks } from '../components/fetchTasks';
 
-function loginPage({ navigation, reduxSaveSessionToken, reduxUserData }) {
+function loginPage({ navigation, reduxSaveSessionToken, reduxUserData, reduxSavePinned, reduxSaveTasks }) {
 
     const [loading, setLoading] = useState(false);
     const [buttonTitle, setButtonTitle] = useState('Login');
@@ -25,13 +28,25 @@ function loginPage({ navigation, reduxSaveSessionToken, reduxUserData }) {
             ToastAndroid.showWithGravity('Network error. Check internet connection.', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
         });
         let json = await response.json();
-        if (json.title !== 'Error'){
+        if (json.title !== 'Error') {
             reduxUserData(json.content);
             Pushwoosh.setUserId(json.content.name);
             navigation.navigate('ModalsStack');
         }
-        else{
+        else {
             ToastAndroid.showWithGravity(json.content, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+        }
+    }
+
+    const getTasks = async (token) => {
+        let results = await fetchTasks(token);
+        if (results) {
+            reduxSavePinned(results.content.pinned);
+            reduxSaveTasks(results.content.tasks);
+            alert(JSON.stringify(results));
+        }
+        else {
+            ToastAndroid.showWithGravity("Error retrieving tasks.", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
         }
     }
 
@@ -75,6 +90,7 @@ function loginPage({ navigation, reduxSaveSessionToken, reduxUserData }) {
                         else {
                             reduxSaveSessionToken(json.content);
                             fetchProfile(json.content);
+                            getTasks(json.content);
                         }
                     }).catch(err => {
                         console.log(err);
@@ -133,6 +149,12 @@ const mapDispatchToProps = (dispatch) => {
         },
         reduxUserData: (userData) => {
             dispatch(saveUserData(userData));
+        },
+        reduxSaveTasks: (tasksData) => {
+            dispatch(saveTasksData(tasksData));
+        },
+        reduxSavePinned: (pinnedTasks) => {
+            dispatch(savePinnedTasks(pinnedTasks));
         }
     }
 }
