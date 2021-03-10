@@ -32,7 +32,7 @@ const dataProfile = (req, res) => {
 
 const requestDataUser = async (username, pass) => {
     let client = await db.getClient();
-    let query = "SELECT name,email,password FROM users WHERE name = $1 AND password = $2";
+    let query = "SELECT user_id,name,email,password FROM users WHERE name = $1 AND password = $2";
     let params = [username, pass];
     try{
         let results = await client.query(query, params);
@@ -82,21 +82,6 @@ const editProfile = (req,res) => {
     });
 }
 
-/*const updateData = async (username, pass, email, avatar) =>{
-    let client = await db.getClient();
-    let query ='';
-    let params =[];
-    
-    
-    query = "SELECT users:_id, name,email,password,avatar FROM users WHERE name = $1 AND password = $2";
-    params = [username, pass];
-
-    let result = client.query(query, params);
-    if((await result).rows[0].name === username || (await result).rows[0].password === pass){
-        query = "UPDATE users SET name ="+username+", email = "+email+", password = "+pass+" " 
-    }
-}*/
-
 const saveUserData = async (username, email, password, files) => {
     if (files.avatar){
         let result = await saveAvatar(files.avatar[0], username);
@@ -141,15 +126,14 @@ const updateUserData = async (id, name, email, password, avatarPath = null) => {
     let client = await db.getClient();
     let query = '';
     let params = [];
-    let salt = await bcrypt.genSalt();
-    password = await bcrypt.hash(password, salt);
+   
     if (avatarPath){
-        query = "UPDATE users SET name ="+name+", email = "+email+", password = "+pass+", avatar = "+avatarPath+" WHERE users_id = 1$";
-        params = [id];
+        query = "UPDATE users SET name = $1, email = $2, password = $3, avatar = $4 WHERE users_id = $5";
+        params = [name, email, password, avatarPath, id];
     }
     else{
-        query = "UPDATE users SET name ="+name+", email = "+email+", password = "+pass+" WHERE users_id = 1$";;
-        params = [id];
+        query = "UPDATE users SET name = $1, email = $2, password = $3 WHERE users_id = $4";;
+        params = [name, email, password,id];
     }
     try{
         await client.query(query, params);
