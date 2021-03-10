@@ -30,6 +30,7 @@ app.use('/users', userAuthenticationRoutes);
 app.use('/users', userDataRoutes);
 app.use('/tasks', taskRoutes);
 
+
 app.listen(port, () => {
     console.log(`Server running in port ${port}`);
 })
