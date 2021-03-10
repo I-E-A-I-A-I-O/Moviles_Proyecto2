@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { connect } from 'react-redux';
 import { saveSessionToken } from '../actions/saveSessionToken';
 import { saveUserData } from '../actions/saveUserData';
+import Pushwoosh from 'pushwoosh-react-native-plugin';
 
 function loginPage({ navigation, reduxSaveSessionToken, reduxUserData }) {
 
@@ -26,6 +27,7 @@ function loginPage({ navigation, reduxSaveSessionToken, reduxUserData }) {
         let json = await response.json();
         if (json.title !== 'Error'){
             reduxUserData(json.content);
+            Pushwoosh.setUserId(json.content.name);
             navigation.navigate('ModalsStack');
         }
         else{

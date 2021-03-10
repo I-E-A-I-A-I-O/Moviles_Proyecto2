@@ -3,6 +3,7 @@ import { ScrollView, Platform, ToastAndroid, Pressable, ActivityIndicator } from
 import { Button, Text, Input, Card } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImagePicker from '../components/imagePicker';
+import Pushwoosh from 'pushwoosh-react-native-plugin';
 import { connect } from 'react-redux';
 
 function CreateTask({ navigation, sessionToken }) {
@@ -15,6 +16,7 @@ function CreateTask({ navigation, sessionToken }) {
     const [fileURI, setFileURI] = useState(null);
     const [type, setType] = useState('jpg');
     const [taskName, setTaskName] = useState('');
+    const [buttonTitle, setButtonTitle] = useState('Save task');
     const [taskDescription, setTaskDescription] = useState('');
     const [taskTag, setTaskTag] = useState('');
 
@@ -39,34 +41,43 @@ function CreateTask({ navigation, sessionToken }) {
         setFileURI(data.uri);
         alert(JSON.stringify(data));
     };
-    const saveTask = async () => {
-        let form = new FormData();
-        form.append('name', taskName);
-        form.append('description', taskDescription);
-        form.append('tag', taskTag);
-        form.append('date', date.toISOString().split('T')[0]);
-        form.append('time', time.toLocaleTimeString());
-        if (fileURI) {
-            form.append('image', {
-                type: `image/${type}`,
-                name: `avatar.${type}`,
-                uri: fileURI
-            });
-        }
-        let response = await fetch('http://192.168.0.101:8000/tasks', {
-            method: 'POST',
-            body: form,
-            headers: {
-                'authToken': sessionToken
+    const saveTask = () => {
+        Pushwoosh.getPushToken(function (token) {
+            setLoading(true);
+            setButtonTitle('');
+            let form = new FormData();
+            form.append('name', taskName);
+            form.append('description', taskDescription);
+            form.append('tag', taskTag);
+            form.append('date', date.toISOString().split('T')[0]);
+            form.append('time', time.toLocaleTimeString());
+            if (fileURI) {
+                form.append('image', {
+                    type: `image/${type}`,
+                    name: `avatar.${type}`,
+                    uri: fileURI
+                });
             }
-        }).catch(err => {
-            console.log(err);
-            ToastAndroid.show('Network error. Try again later.', ToastAndroid.SHORT);
-        });
-        if (response) {
-            let json = await response.json();
-            console.log(json);
-        }
+            fetch('http://192.168.0.101:8000/tasks', {
+                method: 'POST',
+                body: form,
+                headers: {
+                    'authToken': sessionToken,
+                    'pushToken': token
+                }
+            }).then(response => response.json())
+                .then(json => {
+                    alert(JSON.stringify(json));
+                    setLoading(false);
+                    setButtonTitle('Save task');
+                })
+                .catch(err => {
+                    console.log(err);
+                    setLoading(false);
+                    setButtonTitle('Save task');
+                    ToastAndroid.show('Network error. Try again later.', ToastAndroid.SHORT);
+                });
+        })
     }
 
     return (
@@ -93,8 +104,9 @@ function CreateTask({ navigation, sessionToken }) {
                         style={{ color: 'lime' }}
                     />
                 </Pressable>
-                <Button disabled={loading} title={'Save task'}
+                <Button disabled={loading} title={buttonTitle}
                     icon={<ActivityIndicator color={'lime'} animating={loading} />}
+                    onPress={() => (saveTask())}
                 />
             </Card>
             {show && (

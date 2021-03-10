@@ -1,11 +1,11 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import { DeviceEventEmitter } from 'react-native';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { Notifications } from 'react-native-notifications';
+
 import Pushwoosh from 'pushwoosh-react-native-plugin';
 
 import Login from './pages/Login';
@@ -25,15 +25,26 @@ const App: () => React$Node = () => {
 
   Notifications.events().registerNotificationReceivedForeground(
     (notification: Notification, completion) => {
+      let u = JSON.parse(notification.payload.u);
       console.log(
-        `Notification received in foreground: ${notification.title} : ${notification.body}`,
+        `Notification received in foreground: ${notification.title} : ${u.task_id}`,
       );
       Notifications.postLocalNotification({
-        body: notification.body,
-        title: notification.title,
+        title: notification.title
       });
-      completion({ alert: false, sound: false, badge: false });
+      completeTask(u.task_id);
     },
+  );
+
+  Notifications.events().registerNotificationReceivedBackground(
+    (notification: Notification, completion) => {
+      let u = JSON.parse(notification.payload.u);
+      console.log(
+        `Notification received in background: ${notification.title} : ${u.task_id}`,
+      );
+      completion({ alert: true, sound: true, badge: true });
+      completeTask(u.task_id);
+    }
   );
 
   Notifications.events().registerNotificationOpened(
@@ -62,32 +73,13 @@ const App: () => React$Node = () => {
     pw_appid: '6F321-F45AD',
     project_number: '667393835268',
   });
-  Pushwoosh.register((success, fail) => {
-    Pushwoosh.setUserId(success);
-    let body = { userId: success, time: '18:12' };
-    fetch('http://192.168.0.101:8000/notifications', {
-      method: 'POST',
-      body: JSON.stringify(body),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then(response => response.json())
-      .then(json => {
-        console.log(json);
-      })
-  });
+  Pushwoosh.register((success, fail) => { });
 
-  // this event is fired when the push is received in the app
-  DeviceEventEmitter.addListener('pushReceived', (e: Event) => {
-    console.warn('pushReceived: ' + JSON.stringify(e));
-    // shows a push is received. Implement passive reaction to a push, such as UI update or data download.
-  });
-
-  // this event is fired when user clicks on notification
-  DeviceEventEmitter.addListener('pushOpened', (e: Event) => {
-    console.warn('pushOpened: ' + JSON.stringify(e));
-    // shows a user tapped the notification. Implement user interaction, such as showing push details
-  });
+  const completeTask = (taskId) =>{
+    fetch(`http://192.168.0.101:8000/tasks/task/${taskId}`, {
+      method: 'PUT'
+    });
+  }
 
   return (
     <Provider store={store} >

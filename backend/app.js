@@ -21,7 +21,7 @@ app.use(cors({
         callback(new Error('Not allowed by CORS'))
       }
     },
-    allowedHeaders: ['authToken', 'Content-Type', 'Accept']
+    allowedHeaders: ['authToken', 'Content-Type', 'Accept', 'pushToken']
 }));
 app.use(express.json());
 

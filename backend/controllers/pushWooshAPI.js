@@ -17,6 +17,11 @@ const registerClient = (req, res) => {
     });
 }
 
+const getClient = () => {
+    return PWClient;
+}
+
 module.exports = {
-    registerClient
+    registerClient,
+    getClient
 }
