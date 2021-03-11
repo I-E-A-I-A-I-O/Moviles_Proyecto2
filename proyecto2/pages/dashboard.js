@@ -46,6 +46,7 @@ function Dashboard({ navigation, sessionToken, userData, reduxSavePinned, reduxS
                     refresh(sessionToken);
                 }}
             />
+            <Draggable type={'pinned'} />
             <Draggable />
         </View>
     )

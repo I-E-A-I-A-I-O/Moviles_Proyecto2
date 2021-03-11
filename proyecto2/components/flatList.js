@@ -1,30 +1,66 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Pressable } from 'react-native';
 import { connect } from 'react-redux';
 import IonIcons from 'react-native-vector-icons/FontAwesome5';
-import { Text, Tooltip } from 'react-native-elements';
+import RNToastMessage from 'react-native-toast-message';
+import { Text } from 'react-native-elements';
 import { saveTasksData } from '../actions/saveTasksData';
+import { normalToPinned } from '../actions/normalToPinned';
+import { pinnedToNormal } from '../actions/pinnedToNormal';
+import { savePinnedTasks } from '../actions/savePinnedTasks';
 
 import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist';
 
-function FlatList({ tasks, reduxSaveReorder }) {
+function FlatList({ pinned, tasks, reduxSavePinned, reduxSaveReorder, sessionToken, reduxToNormal, reduxToPinned, type = 'normal' }) {
 
-  type Task = {
-    task_id: string,
-    name: string,
-    tag: string,
-    list_index: number
-  };
+  const saveChanges = (data) => {
+    fetch('http://192.168.0.101:8000/tasks', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'authToken': sessionToken
+      }
+    }).then(response => response.json())
+      .then(json => {
+        RNToastMessage.show({ text1: json.content, autoHide: true, type: 'info', position: 'bottom' });
+      })
+  }
+
+  const saveAlert = () => {
+    RNToastMessage.show(
+      {
+        type: 'info',
+        text1: 'Unsaved changes. Tap to save.',
+        position: 'bottom',
+        onPress: () => {
+          alert(tasks)
+          //saveChanges(data);
+          RNToastMessage.hide();
+        }
+      }
+    )
+  }
+
+  const pinChange = (taskId) => {
+    if (type === 'normal') {
+      reduxToPinned(taskId);
+    }
+    else {
+      reduxToNormal(taskId);
+    }
+    saveAlert();
+  }
 
   const renderItem = useCallback(
-    ({ item, index, drag, isActive }: RenderItemParams<Task>) => {
+    ({ item, index, drag, isActive }: RenderItemParams<any>) => {
       return (
         <Pressable
           style={{
             height: 70,
-            backgroundColor: isActive ? '#747f91' : '#3e443d',
+            backgroundColor: type === 'normal' ? isActive ? '#747f91' : '#3e443d' : 'silver',
             justifyContent: 'center',
             borderColor: 'black',
             borderStyle: 'solid',
@@ -33,7 +69,11 @@ function FlatList({ tasks, reduxSaveReorder }) {
           }}
           android_ripple={{ color: 'white' }}
           focusable={true}
-          onLongPress={drag}>
+          onLongPress={() => {
+            if (type === 'normal') {
+              drag();
+            }
+          }}>
           <Text
             style={{
               fontWeight: 'bold',
@@ -45,11 +85,16 @@ function FlatList({ tasks, reduxSaveReorder }) {
             {item.name}
           </Text>
           <Text
-            style={{fontWeight: 'bold', color:'#d3e5b5', position: 'absolute', left:'60%'}}
+            style={{ fontWeight: 'bold', color: '#d3e5b5', position: 'absolute', left: '60%' }}
           >
             {item.tag.length > 0 ? item.tag : 'No tag'}
           </Text>
-          <IonIcons style={{ alignSelf: 'flex-end', position: 'absolute', top: '30%', right: '2%' }} name={'star'} color={'gold'} size={30} />
+          <IonIcons
+            style={{ alignSelf: 'flex-end', position: 'absolute', top: '30%', right: '2%' }}
+            name={'star'} color={'gold'} size={30}
+            solid={type !== 'normal'}
+            onPress={() => (pinChange(item.current_task_id))}
+          />
         </Pressable>
       );
     },
@@ -58,13 +103,14 @@ function FlatList({ tasks, reduxSaveReorder }) {
 
   return (
     <DraggableFlatList
-      data={tasks}
+      data={type === 'normal' ? tasks : pinned}
       renderItem={renderItem}
       keyExtractor={(item, index) => `draggable-item-${item.task_id}`}
       onDragEnd={({ data, from, to }) => {
         if (from !== to) {
           moveIndexes(data);
           reduxSaveReorder(data);
+          saveAlert();
         }
       }}
     />
@@ -79,7 +125,9 @@ const moveIndexes = (array) => {
 
 const mapStateToProps = (state) => {
   return {
-    tasks: state.tasksData
+    tasks: state.tasksData,
+    sessionToken: state.sessionToken,
+    pinned: state.pinnedTasks
   }
 }
 
@@ -87,6 +135,15 @@ const mapDispatchToProps = (dispatch) => {
   return {
     reduxSaveReorder: (newArray) => {
       dispatch(saveTasksData(newArray));
+    },
+    reduxSavePinned: (pinned) => {
+      dispatch(savePinnedTasks(pinned));
+    },
+    reduxToPinned: (taskId) => {
+      dispatch(normalToPinned(taskId));
+    },
+    reduxToNormal: (taskId) => {
+      dispatch(pinnedToNormal(taskId));
     }
   }
 }
