@@ -36,6 +36,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ModalsStack from './pages/modalsStack';
+import UserProfile from './pages/userProfile';
+import EditProfile from './pages/pageEditProfile';
 import { PersistGate } from 'redux-persist/es/integration/react';
 import { Provider } from 'react-redux';
 import { store, persistor } from './store/store';
@@ -52,8 +54,9 @@ const App: () => React$Node = () => {
           <Stack.Navigator initialRouteName='login' >
             <Stack.Screen name={'Login'} component={Login} options={{ title: '' }} />
             <Stack.Screen name={'Register'} component={Register} options={{ title: 'Create a new account' }} />
-            <Stack.Screen name={'ModalsStack'} component={ModalsStack}
-              options={{ headerShown: false }} />
+            <Stack.Screen name={'userProfile'} component={UserProfile} options={{ title: '            User Profile' }} />
+            <Stack.Screen name={'pageEditProfile'} component={EditProfile} options={{ title: '            Edit Profile'}}/>
+            <Stack.Screen name={'ModalsStack'} component={ModalsStack} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
       </PersistGate>

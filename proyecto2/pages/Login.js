@@ -106,6 +106,16 @@ function loginPage({ navigation, reduxSaveSessionToken, reduxUserData, reduxSave
             >
                 Create account
             </Text>
+
+            <Text
+                style={styles.createAccount}
+                onPress={() => {
+                    navigation.navigate('userProfile');
+                }}
+            >
+                Profile
+            </Text>
+
         </View>
     );
 }
