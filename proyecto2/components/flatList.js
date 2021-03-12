@@ -1,57 +1,21 @@
 import React, { useCallback } from 'react';
 import { Pressable } from 'react-native';
-import { connect } from 'react-redux';
 import IonIcons from 'react-native-vector-icons/FontAwesome5';
-import RNToastMessage from 'react-native-toast-message';
 import { Text } from 'react-native-elements';
-import { saveTasksData } from '../actions/saveTasksData';
-import { normalToPinned } from '../actions/normalToPinned';
-import { pinnedToNormal } from '../actions/pinnedToNormal';
-import { savePinnedTasks } from '../actions/savePinnedTasks';
 
 import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist';
 
-function FlatList({ pinned, tasks, reduxSavePinned, reduxSaveReorder, sessionToken, reduxToNormal, reduxToPinned, type = 'normal' }) {
-
-  const saveChanges = (data) => {
-    fetch('http://192.168.0.101:8000/tasks', {
-      method: 'PUT',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-        'authToken': sessionToken
-      }
-    }).then(response => response.json())
-      .then(json => {
-        RNToastMessage.show({ text1: json.content, autoHide: true, type: 'info', position: 'bottom' });
-      })
-  }
-
-  const saveAlert = () => {
-    RNToastMessage.show(
-      {
-        type: 'info',
-        text1: 'Unsaved changes. Tap to save.',
-        position: 'bottom',
-        onPress: () => {
-          alert(tasks)
-          //saveChanges(data);
-          RNToastMessage.hide();
-        }
-      }
-    )
-  }
+const FlatList = ({ tasks, type = 'normal', onChange }) => {
 
   const pinChange = (taskId) => {
     if (type === 'normal') {
-      reduxToPinned(taskId);
+      onChange('toPinned', taskId);
     }
     else {
-      reduxToNormal(taskId);
+      onChange('toNormal', taskId);
     }
-    saveAlert();
   }
 
   const renderItem = useCallback(
@@ -103,14 +67,13 @@ function FlatList({ pinned, tasks, reduxSavePinned, reduxSaveReorder, sessionTok
 
   return (
     <DraggableFlatList
-      data={type === 'normal' ? tasks : pinned}
+      data={tasks}
       renderItem={renderItem}
       keyExtractor={(item, index) => `draggable-item-${item.task_id}`}
       onDragEnd={({ data, from, to }) => {
         if (from !== to) {
           moveIndexes(data);
-          reduxSaveReorder(data);
-          saveAlert();
+          onChange('reorder', data);
         }
       }}
     />
@@ -123,29 +86,4 @@ const moveIndexes = (array) => {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    tasks: state.tasksData,
-    sessionToken: state.sessionToken,
-    pinned: state.pinnedTasks
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    reduxSaveReorder: (newArray) => {
-      dispatch(saveTasksData(newArray));
-    },
-    reduxSavePinned: (pinned) => {
-      dispatch(savePinnedTasks(pinned));
-    },
-    reduxToPinned: (taskId) => {
-      dispatch(normalToPinned(taskId));
-    },
-    reduxToNormal: (taskId) => {
-      dispatch(pinnedToNormal(taskId));
-    }
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(FlatList);
+export default FlatList;
