@@ -70,8 +70,8 @@ const editProfile = (req,res) => {
             name = name[0];
             password = password[0];
             email = email[0];
-            let salt = await bcrypt.genSalt();
-            password = await bcrypt.hash(password, salt);
+            let salt = bcrypt.genSaltSync();
+            password = bcrypt.hashSync(password, salt);
             saveUserData(name, email, password, files).then(result => {
                 if (result.result){
                     res.status(200).json({title: 'Success', content: result});
