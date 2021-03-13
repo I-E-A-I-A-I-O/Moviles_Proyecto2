@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, ActivityIndicator, ToastAndroid } from 'react-native';
-import { Button, Input } from 'react-native-elements';
+import { Button, Input, Text } from 'react-native-elements';
 import RNToastMessage from 'react-native-toast-message';
 import Draggable from '../components/flatList';
 import { fetchTasks } from '../components/fetchTasks';
@@ -8,6 +8,7 @@ import { saveTasksData } from '../actions/saveTasksData';
 import { normalToPinned } from '../actions/normalToPinned';
 import { pinnedToNormal } from '../actions/pinnedToNormal';
 import { savePinnedTasks } from '../actions/savePinnedTasks';
+import { store } from '../store/store';
 import { connect } from 'react-redux';
 
 function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder, reduxToPinned,
@@ -24,9 +25,8 @@ function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder
         setLoading(false);
         setTitle('New task / Refresh');
         if (results) {
-            alert(JSON.stringify(results))
             reduxSavePinned(results.content.pinned);
-            reduxReorder(results.content.tasks);
+            reduxSaveReorder(results.content.tasks);
             ToastAndroid.show('Tasks updated.', ToastAndroid.SHORT);
         }
         else {
@@ -35,7 +35,12 @@ function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder
     }
 
     const saveChanges = () => {
-        /*fetch('http://192.168.0.101:8000/tasks', {
+        let state = store.getState();
+        let data = {
+            pinned: state.pinnedTasks,
+            tasks: state.tasksData
+        }
+        fetch('http://192.168.0.101:8000/tasks', {
             method: 'PUT',
             body: JSON.stringify(data),
             headers: {
@@ -45,7 +50,10 @@ function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder
         }).then(response => response.json())
             .then(json => {
                 RNToastMessage.show({ text1: json.content, autoHide: true, type: 'info', position: 'bottom' });
-            })*/
+            }).catch(err => {
+                console.log(err);
+                RNToastMessage.show({ text1: 'Error saving changes.', autoHide: true, type: 'error', position: 'bottom' });
+            })
     }
 
     const saveAlert = () => {
@@ -55,7 +63,7 @@ function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder
                 text1: 'Unsaved changes. Tap to save.',
                 position: 'bottom',
                 onPress: () => {
-                    alert(JSON.stringify(tasks));
+                    saveChanges();
                     RNToastMessage.hide();
                 }
             }
@@ -63,7 +71,6 @@ function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder
     }
 
     const doOnChange = (type, data) => {
-        alert(JSON.stringify(tasks));
         switch (type) {
             case 'toNormal': {
                 reduxToNormal(data);
@@ -86,10 +93,7 @@ function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder
 
     return (
         <View style={{ flex: 1 }}>
-            {
-                false && <Input value={JSON.stringify(tasks)} />
-            }
-            <Input style={{ color: 'lime' }} label={'Search task'} />
+            <Input style={{ color: 'white' }} label={'Search task'} />
             <Button
                 title={title}
                 disabled={loading}
@@ -103,8 +107,39 @@ function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder
                     refresh(sessionToken);
                 }}
             />
-            <Draggable tasks={pinned} onChange={doOnChange} type={'pinned'} />
-            <Draggable tasks={tasks} onChange={doOnChange} />
+
+            {
+                pinned.length > 0 && (
+                    <View style={{ flex: 1 }}>
+                        <Text
+                            style={{
+                                color: '#f6c90e',
+                                fontWeight: 'bold',
+                                fontSize: 30,
+                                alignSelf: 'center'
+                            }}
+                        >
+                            Pinned tasks
+                </Text>
+                        <Draggable tasks={pinned} onChange={doOnChange} type={'pinned'} />
+                    </View>
+                )}
+            {
+                tasks.length > 0 && (
+                    <View style={{ flex: 1 }}>
+                        <Text
+                            style={{
+                                color: 'white',
+                                fontWeight: 'bold',
+                                fontSize: 30,
+                                alignSelf: 'center'
+                            }}
+                        >
+                            Tasks
+                </Text>
+                        <Draggable tasks={tasks} onChange={doOnChange} />
+                    </View>
+                )}
         </View>
     )
 }

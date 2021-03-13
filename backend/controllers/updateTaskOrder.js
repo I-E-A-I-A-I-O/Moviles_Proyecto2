@@ -3,7 +3,6 @@ const jwt = require('../helpers/token');
 
 const updateOrder = async (req, res) => {
     let token = req.headers.authtoken;
-    console.log(JSON.stringify(req.body))
     let tokenValid = await jwt.verifyToken(token);
     if (tokenValid.connected) {
         let client = await db.getClient();
@@ -11,11 +10,11 @@ const updateOrder = async (req, res) => {
             await client.query('BEGIN', []);
             let normal = await insert(client, req.body.tasks, tokenValid.id, 'normal');
             let pinned = await insert(client, req.body.pinned, tokenValid.id, 'pinned');
-            if (normal && pinned){
+            if (normal && pinned) {
                 client.query('COMMIT', []);
                 res.status(200).json({ title: 'Success', content: 'Task order updated.' });
             }
-            else{
+            else {
                 client.query('ROLLBACK', []);
                 res.status(500).json({ title: 'Error', content: "Couldn't save new order." });
             }
@@ -37,12 +36,14 @@ const insert = async (client, tasks, userId, type) => {
             : 'DELETE FROM pinned_tasks WHERE user_id = $1';
         let params = [userId];
         await client.query(query, params);
-        let values = generateValues(tasks.length, type === 'normal' ? 3 : 2);
-        params = generateParams(tasks, userId, type);
-        query = type === 'normal' ? 
-        `INSERT INTO task_order(current_task_id, list_index, user_id) VALUES${values}`
-        : `INSERT INTO pinned_tasks(current_task_id, user_id) VALUES${values}`;
-        await client.query(query, params);
+        if (tasks.length > 0) {
+            let values = generateValues(tasks.length, type === 'normal' ? 3 : 2);
+            params = generateParams(tasks, userId, type);
+            query = type === 'normal' ?
+                `INSERT INTO task_order(current_task_id, list_index, user_id) VALUES${values}`
+                : `INSERT INTO pinned_tasks(current_task_id, user_id) VALUES${values}`;
+            await client.query(query, params);
+        }
         return true;
     } catch (err) {
         console.error(err);

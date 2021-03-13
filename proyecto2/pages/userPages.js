@@ -9,13 +9,23 @@ const Tab = createBottomTabNavigator();
 
 function UserPages({ navigation }) {
     return (
-        <Tab.Navigator initialRouteName={'Dashboard'} >
+        <Tab.Navigator
+            initialRouteName={'Dashboard'}
+        >
             <Tab.Screen
+<<<<<<< HEAD
                 name={'dashboard'} component={Dashboard}
+=======
+                name={'Dashboard'}      
+                component={Dashboard}
+>>>>>>> 153d976... Nueva paleta de colores implementada. Pa que se va mas mejor
                 options={
                     {
                         tabBarIcon: (focused) => (
-                            <IonIcons size={25} name={focused ? 'clipboard' : 'clipboard-outline'} color={focused ? 'lime' : 'green'} />
+                            <IonIcons size={25}
+                                name={focused ? 'clipboard' : 'clipboard-outline'}
+                                color={focused ? '#e94560' : '#84142d'}
+                            />
                         ),
                     }
                 }

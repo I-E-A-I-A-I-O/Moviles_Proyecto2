@@ -41,6 +41,18 @@ import { Provider } from 'react-redux';
 import { store, persistor } from './store/store';
 import Toast from 'react-native-toast-message';
 
+const myTheme = {
+  dark: true,
+  colors: {
+    primary: '#dbd8e3',
+    background: '#222831',
+    card: '#393e46',
+    text: 'white',
+    border: '#222831',
+    notification: 'red'
+  }
+}
+
 const Stack = createStackNavigator();
 
 const App: () => React$Node = () => {
@@ -49,7 +61,7 @@ const App: () => React$Node = () => {
     <>
       <Provider store={store} >
         <PersistGate loading={null} persistor={persistor} >
-          <NavigationContainer theme={DarkTheme}>
+          <NavigationContainer theme={myTheme}>
             <Stack.Navigator initialRouteName='login' >
               <Stack.Screen name={'Login'} component={Login} options={{ title: '' }} />
               <Stack.Screen name={'Register'} component={Register} options={{ title: 'Create a new account' }} />

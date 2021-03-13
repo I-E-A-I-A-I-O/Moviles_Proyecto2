@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ScrollView, Platform, ToastAndroid, Pressable, ActivityIndicator } from 'react-native';
+import { ScrollView, Platform, Pressable, ActivityIndicator } from 'react-native';
+import toast from 'react-native-toast-message';
 import { Button, Text, Input, Card } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ImagePicker from '../components/imagePicker';
@@ -66,7 +67,7 @@ function CreateTask({ navigation, sessionToken }) {
                 }
             }).then(response => response.json())
                 .then(json => {
-                    alert(JSON.stringify(json));
+                    toast.show({ type: json.title.toLowerCase(), position: 'bottom', autoHide: true, text1: json.content });
                     setLoading(false);
                     setButtonTitle('Save task');
                 })
@@ -74,7 +75,7 @@ function CreateTask({ navigation, sessionToken }) {
                     console.log(err);
                     setLoading(false);
                     setButtonTitle('Save task');
-                    ToastAndroid.show('Network error. Try again later.', ToastAndroid.SHORT);
+                    toast.show({ type: 'error', position: 'bottom', autoHide: true, text1: 'Network error. Try again later' });
                 });
         })
     }
@@ -86,29 +87,29 @@ function CreateTask({ navigation, sessionToken }) {
                 <Card.Divider />
                 <Input label={'Task name'}
                     onChange={(e) => (setTaskName(e.nativeEvent.text))}
-                    style={{color: 'lime'}}
+                    style={{ color: 'white' }}
                 />
                 <Input label={'Task description'} multiline={true}
                     onChange={(e) => (setTaskDescription(e.nativeEvent.text))}
-                    style={{color: 'lime'}}
+                    style={{ color: 'white' }}
                 />
                 <Input label={'Tag'}
                     onChange={(e) => (setTaskTag(e.nativeEvent.text))}
-                    style={{color: 'lime'}}
+                    style={{ color: 'white' }}
                 />
                 <Pressable onPress={() => (showDatepicker('date'))} >
                     <Input disabled={true} label={'Date'} value={date.toISOString().split('T')[0]}
-                        style={{ color: 'lime' }}
+                        style={{ color: 'white' }}
                     />
                 </Pressable>
                 <Pressable onPress={() => (showDatepicker('time'))} >
                     <Input disabled={true} label={'Time'} value={time.toLocaleTimeString().slice(0, 5)}
-                        style={{ color: 'lime' }}
+                        style={{ color: 'white' }}
                     />
                 </Pressable>
                 <Button disabled={loading} title={buttonTitle}
-                    icon={<ActivityIndicator color={'lime'} animating={loading} />}
-                    onPress={() => (saveTask())}
+                    icon={<ActivityIndicator color={'#e94560'} animating={loading} />}
+                    onPress={saveTask}
                 />
             </Card>
             {show && (
