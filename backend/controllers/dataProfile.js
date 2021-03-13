@@ -16,10 +16,10 @@ const dataProfile = (req, res) => {
             let {name, password} = fields;
             name = name[0];
             password = password[0];
-            let salt = await bcrypt.genSalt();
-            password = await bcrypt.hash(password, salt);
+            let salt = bcrypt.genSaltSync();
+            password = bcrypt.hashSync(password, salt);
             requestDataUser(name, password).then(result => {
-                if (result.result){
+                if (result.data){
                     res.status(200).json({title: 'Success', content: result});
                 }
                 else{
@@ -46,9 +46,11 @@ const requestDataUser = async (username, pass) => {
         }
         else{
             console.warn("Error request of user data");
+            return null;
         }
     }catch(err){
         console.error(err);
+        return null;
     }finally{
         client.release();
     }
