@@ -24,7 +24,7 @@ const FlatList = ({ tasks, type = 'normal', onChange }) => {
         <Pressable
           style={{
             height: 70,
-            backgroundColor: type === 'normal' ? isActive ? '#747f91' : '#3e443d' : 'silver',
+            backgroundColor: type === 'normal' ? isActive ? '#747f91' : '#303841' : '#ff4d00',
             justifyContent: 'center',
             borderColor: 'black',
             borderStyle: 'solid',
@@ -49,7 +49,7 @@ const FlatList = ({ tasks, type = 'normal', onChange }) => {
             {item.name}
           </Text>
           <Text
-            style={{ fontWeight: 'bold', color: '#d3e5b5', position: 'absolute', left: '60%' }}
+            style={{ fontWeight: 'bold', color: '#dbd8e3', position: 'absolute', left: '60%' }}
           >
             {item.tag.length > 0 ? item.tag : 'No tag'}
           </Text>

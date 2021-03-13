@@ -8,13 +8,19 @@ const Tab = createBottomTabNavigator();
 
 function UserPages({ navigation }) {
     return (
-        <Tab.Navigator initialRouteName={'Dashboard'} >
+        <Tab.Navigator
+            initialRouteName={'Dashboard'}
+        >
             <Tab.Screen
-                name={'Dashboard'} component={Dashboard}
+                name={'Dashboard'}      
+                component={Dashboard}
                 options={
                     {
                         tabBarIcon: (focused) => (
-                            <IonIcons size={25} name={focused ? 'clipboard' : 'clipboard-outline'} color={focused ? 'lime' : 'green'} />
+                            <IonIcons size={25}
+                                name={focused ? 'clipboard' : 'clipboard-outline'}
+                                color={focused ? '#e94560' : '#84142d'}
+                            />
                         ),
                     }
                 }

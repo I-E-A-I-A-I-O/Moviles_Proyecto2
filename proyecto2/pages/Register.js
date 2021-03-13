@@ -20,7 +20,7 @@ function registerPage({ navigation }) {
 
     return (
         <ScrollView>
-            <Card containerStyle={{ backgroundColor: '#1F262A', borderColor: 'black' }} >
+            <Card containerStyle={{ backgroundColor: '#393e46', borderColor: 'black' }} >
                 <ImagePicker onInput={fileInput} />
                 <Card.Divider />
                 <Input
@@ -59,7 +59,7 @@ function registerPage({ navigation }) {
                         setLoading(false);
                         ToastAndroid.showWithGravity(json.content, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                     });
-                }} icon={<ActivityIndicator color={'lime'} animating={loading} />}
+                }} icon={<ActivityIndicator color={'#e94560'} animating={loading} />}
                     disabled={loading}
                 />
             </Card>
@@ -93,7 +93,7 @@ async function fetchData(data) {
 
 const styles = {
     textFields: {
-        color: '#6699FF'
+        color: 'white'
     }
 }
 

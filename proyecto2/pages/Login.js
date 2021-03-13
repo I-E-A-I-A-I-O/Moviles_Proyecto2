@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, View, ToastAndroid } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
+import toast from 'react-native-toast-message';
 import { Text, Input, Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/Ionicons';
 import { connect } from 'react-redux';
@@ -25,7 +26,7 @@ function loginPage({ navigation, reduxSaveSessionToken, reduxUserData, reduxSave
             }
         }).catch(err => {
             console.log(err);
-            ToastAndroid.showWithGravity('Network error. Check internet connection.', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+            toast.show({ type: 'error', position: 'bottom', autoHide: true, text1: 'Network error. Try again later' });
         });
         let json = await response.json();
         if (json.title !== 'Error') {
@@ -34,7 +35,7 @@ function loginPage({ navigation, reduxSaveSessionToken, reduxUserData, reduxSave
             navigation.navigate('ModalsStack');
         }
         else {
-            ToastAndroid.showWithGravity(json.content, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+            toast.show({ type: json.title.toLowerCase(), position: 'bottom', autoHide: true, text1: json.content });
         }
     }
 
@@ -43,10 +44,9 @@ function loginPage({ navigation, reduxSaveSessionToken, reduxUserData, reduxSave
         if (results) {
             reduxSavePinned(results.content.pinned);
             reduxSaveTasks(results.content.tasks);
-            alert(JSON.stringify(results));
         }
         else {
-            ToastAndroid.showWithGravity("Error retrieving tasks.", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+            toast.show({ type: 'error', position: 'bottom', autoHide: true, text1: 'Error retrieving tasks.' });
         }
     }
 
@@ -57,23 +57,23 @@ function loginPage({ navigation, reduxSaveSessionToken, reduxUserData, reduxSave
                 onChange={(e) => {
                     setName(e.nativeEvent.text);
                 }}
-                placeholder={'Name'} label={'Name'} selectionColor={'lime'}
+                placeholder={'Name'} label={'Name'} selectionColor={'#e94560'}
                 style={styles.textFields} leftIcon={<Icon name={'person'}
-                    color={'lime'} size={18} />}
+                    color={'#e94560'} size={18} />}
             />
             <Input
                 onChange={(e) => {
                     setPassword(e.nativeEvent.text);
                 }}
-                secureTextEntry={true} label={'Password'} selectionColor={'lime'}
+                secureTextEntry={true} label={'Password'} selectionColor={'#e94560'}
                 style={styles.textFields} leftIcon={<Icon name={'lock-closed'}
-                    color={'lime'} size={18} />}
+                    color={'#e94560'} size={18} />}
                 placeholder={'Password'}
             />
             <Button
                 title={buttonTitle}
                 disabled={loading}
-                icon={<ActivityIndicator color={'lime'} animating={loading} />}
+                icon={<ActivityIndicator color={'#e94560'} animating={loading} />}
                 onPress={() => {
                     setLoading(true);
                     setButtonTitle('');
@@ -85,7 +85,7 @@ function loginPage({ navigation, reduxSaveSessionToken, reduxUserData, reduxSave
                         setButtonTitle('Login');
                         setLoading(false);
                         if (json.title !== 'Success') {
-                            ToastAndroid.showWithGravity(json.content, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                            toast.show({ type: 'error', position: 'bottom', autoHide: true, text1: json.content });
                         }
                         else {
                             reduxSaveSessionToken(json.content);
@@ -94,7 +94,7 @@ function loginPage({ navigation, reduxSaveSessionToken, reduxUserData, reduxSave
                         }
                     }).catch(err => {
                         console.log(err);
-                        ToastAndroid.showWithGravity('Network error. Check internet connection.', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                        toast.show({ type: 'error', position: 'bottom', autoHide: true, text1: 'Network error. Try again later' });
                     })
                 }}
             />
@@ -117,24 +117,26 @@ async function loginRequest(data) {
     let response = await fetch('http://192.168.0.101:8000/users/user', {
         method: 'POST',
         body: formData
+    }).catch(err => {
+        console.log(err);
     });
-    let json = await response.json();
-    return json;
+    return response ? await response.json() : null;
 }
 
 const styles = {
     textFields: {
-        color: '#6699FF'
+        color: 'white'
     },
     title: {
-        color: 'lime',
+        color: '#dbd8e3',
         textAlign: 'center',
-        fontSize: 28,
+        fontSize: 38,
         bottom: '8%',
         position: 'relative'
     },
     createAccount: {
-        color: 'lime',
+        color: '#3282b8',
+        fontWeight: 'bold',
         fontSize: 15,
         left: '2%',
         position: 'relative',
