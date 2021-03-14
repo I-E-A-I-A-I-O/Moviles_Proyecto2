@@ -13,12 +13,8 @@ function UserPages({ navigation }) {
             initialRouteName={'Dashboard'}
         >
             <Tab.Screen
-<<<<<<< HEAD
-                name={'dashboard'} component={Dashboard}
-=======
-                name={'Dashboard'}      
+                name={'Dashboard'}
                 component={Dashboard}
->>>>>>> 153d976... Nueva paleta de colores implementada. Pa que se va mas mejor
                 options={
                     {
                         tabBarIcon: (focused) => (
