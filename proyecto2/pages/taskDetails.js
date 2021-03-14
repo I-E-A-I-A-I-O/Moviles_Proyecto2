@@ -26,7 +26,9 @@ function TaskDetails({ route, navigation, token }) {
         .then(json => {
             setFetchingData(false);
             setName(json.content.name);
-            setDate(json.content.date.replace('T', ' ').replace('Z', '').split('.')[0]);
+            let dateString = (new Date(json.content.date)).toLocaleDateString();
+            let timeString = (new Date(json.content.date)).toLocaleTimeString();
+            setDate(`${dateString} ${timeString}`);
             if (json.content.image) { setImage(json.content.image); }
             if (json.content.description) { setDescription(json.content.description); }
             if (json.content.tag) { setTag(json.content.tag); }

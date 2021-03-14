@@ -20,7 +20,7 @@ const saveTask = async (req, res) => {
                 let data = {
                     name: name[0],
                     description: description[0],
-                    tag: tag[0],
+                    tag: tag[0].toLowerCase(),
                     date: date[0],
                     time: time[0]
                 }
@@ -134,7 +134,7 @@ const verifyFields = (name, description, tag) => {
     else if (description.length > 140) {
         return 'Description cannot be longer than 140 characters.';
     }
-    else if (tag > 10) {
+    else if (tag > 8) {
         return 'Tag cannot be longer than 10 characters.';
     }
     else {

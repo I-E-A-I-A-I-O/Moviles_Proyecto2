@@ -51,18 +51,25 @@ const FlatList = ({ tasks, type = 'normal', onChange }) => {
               color: 'white',
               fontSize: 32,
               alignSelf: 'flex-start',
+              justifyContent: 'center',
               paddingLeft: 15
             }}>
             {item.name}
           </Text>
           <Text
-            style={{ fontWeight: 'bold', color: '#dbd8e3', position: 'absolute', left: '60%' }}
+            style={{
+              fontWeight: 'bold',
+              color: '#dbd8e3',
+              position: 'absolute',
+              left: '70%',
+              justifyContent: 'center',
+            }}
           >
             {item.tag.length > 0 ? item.tag : 'No tag'}
           </Text>
           <IonIcons
             style={{ alignSelf: 'flex-end', position: 'absolute', top: '30%', right: '2%' }}
-            name={'star'} color={'gold'} size={30}
+            name={'star'} color={'gold'} size={25}
             solid={type !== 'normal'}
             onPress={() => (pinChange(item.current_task_id))}
           />
