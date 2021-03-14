@@ -2,12 +2,15 @@ import React, { useCallback } from 'react';
 import { Pressable } from 'react-native';
 import IonIcons from 'react-native-vector-icons/FontAwesome5';
 import { Text } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
 
 import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist';
 
 const FlatList = ({ tasks, type = 'normal', onChange }) => {
+
+  const navigation = useNavigation();
 
   const pinChange = (taskId) => {
     if (type === 'normal') {
@@ -33,6 +36,10 @@ const FlatList = ({ tasks, type = 'normal', onChange }) => {
           }}
           android_ripple={{ color: 'white' }}
           focusable={true}
+          onPress={() => {
+            navigation.navigate('ModalsStack',
+              { screen: 'taskDetails', params: { taskId: item.task_id } });
+          }}
           onLongPress={() => {
             if (type === 'normal') {
               drag();
