@@ -6,12 +6,15 @@ const completeTask = async (req, res) => {
     let query = 'DELETE FROM current_tasks WHERE task_id = $1';
     let params = [taskId];
     try {
+        await client.query('BEGIN', []);
         await client.query(query, params);
         query = 'INSERT INTO completed_tasks(task_id) VALUES($1)';
         await client.query(query, params);
+        await client.query('COMMIT', []);
         res.status(200).json({ title: 'Success', content: '' });
     } catch (err) {
         console.error(err);
+        client.query('ROLLBACK', []);
         res.status(500).json({ title: 'Error', content: '' });
     } finally {
         client.release();
