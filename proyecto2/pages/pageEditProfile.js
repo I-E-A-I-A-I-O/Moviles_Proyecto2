@@ -3,7 +3,8 @@ import { ActivityIndicator, ScrollView, ToastAndroid } from 'react-native';
 import { Card, Input, Button } from 'react-native-elements';
 import ImagePicker from '../components/imagePicker';
 
-function pageEditProfile() {
+
+function pageEditProfile({sessionToken}) {
     let [name, setName] = useState('');
     let [password, setPassword] = useState('');
     let [email, setEmail] = useState('');
@@ -43,6 +44,7 @@ function pageEditProfile() {
                     setLoading(true);
                     let data = {
                         name: name,
+                        sessionToken: sessionToken,
                         email: email,
                         password: password,
                         avatar: fileURI,
@@ -61,6 +63,7 @@ function pageEditProfile() {
     );
 }
 
+
 async function fetchData(data) {
     let formData = new FormData();
     formData.append('name', data.name);
@@ -73,10 +76,11 @@ async function fetchData(data) {
             uri: data.avatar
         });
     }
-    let request = await fetch('http://192.168.0.101:8000/users/', {
+    let request = await fetch('http://192.168.0.101:8000/users/editProfile', {
         method: 'POST',
         body: formData,
         headers: {
+            'authToken': data.sessionToken,
             "Content-Type": "multipart/form-data",
             "Accept": "application/json"
         }
