@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">proyecto2</string>
+    <string name="app_name">Task manager</string>
     <string name="fcm_sender_id">667393835268</string>
 </resources>
