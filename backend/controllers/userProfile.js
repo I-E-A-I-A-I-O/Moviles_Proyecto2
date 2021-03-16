@@ -17,6 +17,18 @@ const getUserProfile = async (req, res) => {
     }
 }
 
+const getBase64String = async (path) => {
+    try{
+        let type = path.split(".")[1];
+        let mimeType = `image/${type}`;
+        let content = await fse.readFile(path, {encoding: 'base64'});
+        return `data:${mimeType};base64,${content}`;
+    }catch(err){
+        console.error(err);
+        return defaultAvatar;
+    }
+}
+
 const requestAvatar = async (userId) => {
     let client = await db.getClient();
     let query = "SELECT avatar FROM users WHERE user_id = $1";
@@ -38,16 +50,4 @@ const requestAvatar = async (userId) => {
     }
 }
 
-const getBase64String = async (path) => {
-    try {
-        let type = path.split(".")[1];
-        let mimeType = `image/${type}`;
-        let content = await fse.readFile(path, { encoding: 'base64' });
-        return `data:${mimeType};base64,${content}`;
-    } catch (err) {
-        console.error(err);
-        return defaultAvatar;
-    }
-}
-
-module.exports = { getUserProfile }
+module.exports = {getUserProfile}

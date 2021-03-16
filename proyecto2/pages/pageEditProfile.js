@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, ToastAndroid } from 'react-native';
 import { Card, Input, Button } from 'react-native-elements';
 import ImagePicker from '../components/imagePicker';
-import { connect } from 'react-redux';
 
-function pageEditProfile({sessionToken, userData}) {
+function pageEditProfile({sessionToken}) {
     let [name, setName] = useState('');
     let [password, setPassword] = useState('');
     let [email, setEmail] = useState('');
-    let [buttonTitle, setButtonTitle] = useState('Save Changes');
+    let [buttonTitle, setButtonTitle] = useState('Register');
     let [loading, setLoading] = useState(false);
     let [fileURI, setFileURI] = useState(null);
     let [type, setType] = useState('jpg');
@@ -20,7 +19,8 @@ function pageEditProfile({sessionToken, userData}) {
 
     return (
         <ScrollView>
-            <Card>
+            <Card containerStyle={{ backgroundColor: '#1F262A', borderColor: 'black' }} >
+
                 <ImagePicker onInput={fileInput} />
                 <Card.Divider />
                 <Input
@@ -44,17 +44,18 @@ function pageEditProfile({sessionToken, userData}) {
                     setLoading(true);
                     let data = {
                         name: name,
+                        sessionToken: sessionToken,
                         email: email,
                         password: password,
                         avatar: fileURI,
                         type: type
                     }
                     fetchData(data).then(json => {
-                        setButtonTitle('Save Changes');
+                        setButtonTitle('Register');
                         setLoading(false);
                         ToastAndroid.showWithGravity(json.content, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                     });
-                }} icon={<ActivityIndicator color={'#e94560'} animating={loading} />}
+                }} icon={<ActivityIndicator color={'lime'} animating={loading} />}
                     disabled={loading}
                 />
             </Card>
@@ -78,6 +79,7 @@ async function fetchData(data) {
         method: 'POST',
         body: formData,
         headers: {
+            'authToken': data.sessionToken,
             "Content-Type": "multipart/form-data",
             "Accept": "application/json"
         }
@@ -93,9 +95,9 @@ const styles = {
 
 const mapStateToProps = (state) => {
     return {
-        sessionToken: state.sessionToken,
-        userData: state.userData
+        sessionToken: state.sessionToken
     }
 }
 
 export default connect(mapStateToProps, null)(pageEditProfile);
+

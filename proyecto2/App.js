@@ -59,19 +59,18 @@ const App: () => React$Node = () => {
 
   return (
     <>
-      <Provider store={store} >
-        <PersistGate loading={null} persistor={persistor} >
-          <NavigationContainer theme={myTheme}>
-            <Stack.Navigator initialRouteName='login' >
-              <Stack.Screen name={'Login'} component={Login} options={{ title: '' }} />
-              <Stack.Screen name={'Register'} component={Register} options={{ title: 'Create a new account' }} />
-              <Stack.Screen name={'ModalsStack'} component={ModalsStack}
-                options={{ headerShown: false }} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </PersistGate>
-      </Provider>
-      <Toast autoHide={false} ref={(ref) => Toast.setRef(ref)} />
+    <Provider store={store} >
+      <PersistGate loading={null} persistor={persistor} >
+        <NavigationContainer theme={DarkTheme}>
+          <Stack.Navigator initialRouteName='login' >
+            <Stack.Screen name={'Login'} component={Login} options={{ title: '' }} />
+            <Stack.Screen name={'Register'} component={Register} options={{ title: 'Create a new account' }} />
+            <Stack.Screen name={'ModalsStack'} component={ModalsStack} options={{ headerShown: false }} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PersistGate>
+    </Provider>
+    <Toast autoHide={false} ref={(ref) => Toast.setRef(ref)} />
     </>
   );
 };

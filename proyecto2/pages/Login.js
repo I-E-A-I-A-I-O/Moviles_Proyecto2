@@ -114,7 +114,6 @@ class loginPage extends React.Component {
             </View>
         )
     }
-
 }
 
 async function loginRequest(data) {

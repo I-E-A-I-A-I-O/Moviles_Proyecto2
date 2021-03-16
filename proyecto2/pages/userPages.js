@@ -3,7 +3,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Icon } from 'react-native-elements';
 import Dashboard from './dashboard';
 import pageProfile from './pageProfile'
-import pageEditProfile from './pageEditProfile';
 
 const Tab = createBottomTabNavigator();
 
@@ -41,8 +40,7 @@ function UserPages({ navigation }) {
           }
         }
       />
-      <Tab.Screen name={'pageEditProfile'} component={pageEditProfile} options={{ title: '' }} />
-
+       
     </Tab.Navigator>
   )
 }

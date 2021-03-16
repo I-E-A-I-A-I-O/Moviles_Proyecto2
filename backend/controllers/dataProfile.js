@@ -1,94 +1,44 @@
 const db = require('../helpers/database');
-//const jwt = require('../helpers/token');
+const tokenVerifier = require('../helpers/token');
 const mp = require('multiparty');
 const fse = require('fs-extra');
 const bcrypt = require('bcrypt');
 
-// ----------------------- Cargar los datos al entrar en al perfil --------------------------//
 
-const dataProfile = (req, res) => {
-    let form = new mp.Form();
-    form.parse(req, (error, fields) => {
-        if (error) {
-            res.status(400).json({title: 'Error', content: 'Error reading form.'});
-        }
-        else{
-            let {name, password} = fields;
-            name = name[0];
-            password = password[0];
-            let salt = bcrypt.genSaltSync();
-            password = bcrypt.hashSync(password, salt);
-            requestDataUser(name, password).then(result => {
-                if (result.data){
-                    res.status(200).json({title: 'Success', content: result});
-                }
-                else{
-                    res.status(403).json({title: 'Error', content: "Error loading Data"});
-                }
-            })
-        }
-    });
-}
-
-const requestDataUser = async (username, pass) => {
-    let client = await db.getClient();
-    let query = "SELECT user_id,name,email,password FROM users WHERE name = $1 AND password = $2";
-    let params = [username, pass];
-    try{
-        let results = await client.query(query, params);
-        if (results.rows[0].name === username || results.rows[0].password === pass){
-            let data = {
-                name: results.rows[0].name,
-                email: results.rows[0].email,
-                pass: results.rows[0].pass
+const editProfile = async (req,res) => {
+    let token = req.headers.authtoken;
+    let verified = await tokenVerifier.verifyToken(token);
+    if (verified.connected){
+        let form = new mp.Form();
+        form.parse(req, (error, fields, files) => {
+            if (error) {
+                res.status(400).json({title: 'Error', content: 'Error reading form.'});
             }
-            return data;
-        }
-        else{
-            console.warn("Error request of user data");
-            return null;
-        }
-    }catch(err){
-        console.error(err);
-        return null;
-    }finally{
-        client.release();
+            else{
+                let {name, email, password} = fields;
+                name = name[0];
+                password = password[0];
+                email = email[0];
+                let salt = bcrypt.genSaltSync();
+                password = bcrypt.hashSync(password, salt);
+                saveUserData(verified.id, name, email, password, files).then(result => {
+                    if (result.result){
+                        res.status(200).json({title: 'Success', content: result});
+                    }
+                    else{
+                        res.status(403).json({title: 'Error', content: "Error loading Data"});
+                    }
+                })
+            }
+        });
     }
 }
 
-// -----------------------------------------------------------------------------------------------//
-
-// ------------------------------------- Actualizacion de los datos en el perfil de usuario ---------------------------// 
-const editProfile = (req,res) => {
-    let form = new mp.Form();
-    form.parse(req, (error, fields, files) => {
-        if (error) {
-            res.status(400).json({title: 'Error', content: 'Error reading form.'});
-        }
-        else{
-            let {name, email, password} = fields;
-            name = name[0];
-            password = password[0];
-            email = email[0];
-            let salt = bcrypt.genSaltSync();
-            password = bcrypt.hashSync(password, salt);
-            saveUserData(name, email, password, files).then(result => {
-                if (result.result){
-                    res.status(200).json({title: 'Success', content: result});
-                }
-                else{
-                    res.status(403).json({title: 'Error', content: "Error loading Data"});
-                }
-            })
-        }
-    });
-}
-
-const saveUserData = async (username, email, password, files) => {
+const saveUserData = async (id, username, email, password, files) => {
     if (files.avatar){
         let result = await saveAvatar(files.avatar[0], username);
         if (result.success){
-            let insertResult = await updateUserData(username, email, password, result.path);
+            let insertResult = await updateUserData(id, username, email, password, result.path);
             if (insertResult) {return true}
             else {
                 await fse.remove(result.path);
@@ -100,7 +50,7 @@ const saveUserData = async (username, email, password, files) => {
         }
     }
     else{
-        let insertResult = await updateUserData(username, email, password);
+        let insertResult = await updateUserData(id, username, email, password);
         return insertResult;
     }
 }
@@ -148,4 +98,4 @@ const updateUserData = async (id, name, email, password, avatarPath = null) => {
     }
 }
 
-module.exports = {dataProfile, editProfile};
+module.exports = {editProfile};
