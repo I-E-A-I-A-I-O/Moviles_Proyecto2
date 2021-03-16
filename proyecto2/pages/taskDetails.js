@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, Image, useWindowDimensions, View } from 'react-native';
+import { ScrollView, Image, useWindowDimensions, View, Pressable } from 'react-native';
 import { Text, Icon, Button } from 'react-native-elements';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 import { connect } from 'react-redux';
@@ -26,7 +26,9 @@ function TaskDetails({ route, navigation, token }) {
         .then(json => {
             setFetchingData(false);
             setName(json.content.name);
-            setDate(json.content.date.replace('T', ' ').replace('Z', '').split('.')[0]);
+            let dateString = (new Date(json.content.date)).toLocaleDateString();
+            let timeString = (new Date(json.content.date)).toLocaleTimeString();
+            setDate(`${dateString} ${timeString}`);
             if (json.content.image) { setImage(json.content.image); }
             if (json.content.description) { setDescription(json.content.description); }
             if (json.content.tag) { setTag(json.content.tag); }
@@ -72,7 +74,7 @@ function TaskDetails({ route, navigation, token }) {
                             color: '#dbd8e3',
                             textAlign: 'center',
                             textAlignVertical: 'center'
-                        }}    
+                        }}
                     >
                         {name}
                     </Text>
@@ -104,6 +106,29 @@ function TaskDetails({ route, navigation, token }) {
                         Due: {date}
                     </Text>
                 </View>
+                <Pressable
+                    android_ripple={{
+                        color: 'white',
+                        borderless: true
+                    }}
+                    onPress={() => (
+                        navigation.navigate('editTask', {
+                            taskId: taskId,
+                            taskName: name,
+                            taskDescription: description,
+                            taskDate: date,
+                            taskTag: tag,
+                            taskImage: image,
+                            token: token
+                        })
+                    )}
+                >
+                    <Icon
+                        type={'font-awesome-5'}
+                        name={'pencil-alt'}
+                        color={'#e94560'}
+                    />
+                </Pressable>
             </SkeletonContent>
         </ScrollView>
     )

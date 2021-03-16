@@ -20,7 +20,7 @@ const saveTask = async (req, res) => {
                 let data = {
                     name: name[0],
                     description: description[0],
-                    tag: tag[0],
+                    tag: tag[0].toLowerCase(),
                     date: date[0],
                     time: time[0]
                 }
@@ -72,24 +72,30 @@ const insertTaskData = async (userId, pushToken, data, file = null, res) => {
         await client.query('BEGIN', []);
         let query = 'INSERT INTO task(user_id, name, description, complete_date, tag) VALUES($1, $2, $3, $4, $5) RETURNING task_id';
         let complete_date = `${data.date}T${data.time}`;
-        let params = [userId, data.name, data.description, complete_date, data.tag];
+        let params = [userId, data.name, data.description, complete_date, data.tag.length > 0 ? data.tag.length : 'No tag.'];
         let result = await client.query(query, params);
         getClient().sendMessage(data.name, [pushToken], { send_date: `${data.date} ${data.time}`, timezone: 'America/Caracas', data: { task_id: result.rows[0].task_id } }, (error, response) => {
             if (!error) {
-                insertOrder(client, result.rows[0].task_id, response.Messages[0], userId)
-                    .then(completed => {
-                        if (completed && file) {
-                            saveImage(file, userId, result.rows[0].task_id, client, res);
-                        }
-                        else if (completed && !file) {
-                            client.query('COMMIT', []);
-                            res.status(200).json({ title: 'Success', content: 'Task saved.' })
-                        }
-                        else {
-                            client.query('ROLLBACK', []);
-                            res.status(500).json({ title: 'Error', content: 'Error saving the task' });
-                        }
-                    })
+                if (response.description) {
+                    client.query('ROLLBACK', []);
+                    res.status(403).json({ title: 'error', content: 'Invalid date' });
+                }
+                else {
+                    insertOrder(client, result.rows[0].task_id, response.Messages[0], userId)
+                        .then(completed => {
+                            if (completed && file) {
+                                saveImage(file, userId, result.rows[0].task_id, client, res);
+                            }
+                            else if (completed && !file) {
+                                client.query('COMMIT', []);
+                                res.status(200).json({ title: 'Success', content: 'Task saved.' })
+                            }
+                            else {
+                                client.query('ROLLBACK', []);
+                                res.status(500).json({ title: 'Error', content: 'Error saving the task' });
+                            }
+                        })
+                }
             }
             else {
                 client.query('ROLLBACK', []);
@@ -134,7 +140,7 @@ const verifyFields = (name, description, tag) => {
     else if (description.length > 140) {
         return 'Description cannot be longer than 140 characters.';
     }
-    else if (tag > 10) {
+    else if (tag > 8) {
         return 'Tag cannot be longer than 10 characters.';
     }
     else {
