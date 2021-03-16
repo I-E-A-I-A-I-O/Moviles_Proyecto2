@@ -54,7 +54,6 @@ class loginPage extends React.Component {
         if (this.props.sessionToken.length > 0){
             this.props.navigation.navigate('ModalsStack');
         }
-        console.log(this.props.sessionToken);
     }
 
     render() {
