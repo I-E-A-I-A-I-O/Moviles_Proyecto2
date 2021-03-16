@@ -11,14 +11,14 @@ import { savePinnedTasks } from '../actions/savePinnedTasks';
 import Pushwoosh from 'pushwoosh-react-native-plugin';
 import { fetchTasks } from '../components/fetchTasks';
 
-function loginPage({ navigation, reduxSaveSessionToken, reduxUserData, reduxSavePinned, reduxSaveTasks }) {
+class loginPage extends React.Component {
 
-    const [loading, setLoading] = useState(false);
-    const [buttonTitle, setButtonTitle] = useState('Login');
-    const [name, setName] = useState('');
-    const [password, setPassword] = useState('');
+    constructor(props) {
+        super(props);
+        this.state = { loading: false, buttonTitle: 'Login', name: '', password: '' };
+    }
 
-    const fetchProfile = async (token) => {
+    fetchProfile = async (token) => {
         let response = await fetch('http://192.168.0.101:8000/users/user', {
             method: 'GET',
             headers: {
@@ -30,84 +30,92 @@ function loginPage({ navigation, reduxSaveSessionToken, reduxUserData, reduxSave
         });
         let json = await response.json();
         if (json.title !== 'Error') {
-            reduxUserData(json.content);
+            this.props.reduxUserData(json.content);
             Pushwoosh.setUserId(json.content.name);
-            navigation.navigate('ModalsStack');
+            this.props.navigation.navigate('ModalsStack');
         }
         else {
             toast.show({ type: json.title.toLowerCase(), position: 'bottom', autoHide: true, text1: json.content });
         }
     }
 
-    const getTasks = async (token) => {
+    getTasks = async (token) => {
         let results = await fetchTasks(token);
         if (results) {
-            reduxSavePinned(results.content.pinned);
-            reduxSaveTasks(results.content.tasks);
+            this.props.reduxSavePinned(results.content.pinned);
+            this.props.reduxSaveTasks(results.content.tasks);
         }
         else {
             toast.show({ type: 'error', position: 'bottom', autoHide: true, text1: 'Error retrieving tasks.' });
         }
     }
 
-    return (
-        <View style={{ flex: 1, top: '25%' }} >
-            <Text style={styles.title} >Task manager</Text>
-            <Input
-                onChange={(e) => {
-                    setName(e.nativeEvent.text);
-                }}
-                placeholder={'Name'} label={'Name'} selectionColor={'#e94560'}
-                style={styles.textFields} leftIcon={<Icon name={'person'}
-                    color={'#e94560'} size={18} />}
-            />
-            <Input
-                onChange={(e) => {
-                    setPassword(e.nativeEvent.text);
-                }}
-                secureTextEntry={true} label={'Password'} selectionColor={'#e94560'}
-                style={styles.textFields} leftIcon={<Icon name={'lock-closed'}
-                    color={'#e94560'} size={18} />}
-                placeholder={'Password'}
-            />
-            <Button
-                title={buttonTitle}
-                disabled={loading}
-                icon={<ActivityIndicator color={'#e94560'} animating={loading} />}
-                onPress={() => {
-                    setLoading(true);
-                    setButtonTitle('');
-                    let data = {
-                        name: name,
-                        password: password
-                    };
-                    loginRequest(data).then(json => {
-                        setButtonTitle('Login');
-                        setLoading(false);
-                        if (json.title !== 'Success') {
-                            toast.show({ type: 'error', position: 'bottom', autoHide: true, text1: json.content });
-                        }
-                        else {
-                            reduxSaveSessionToken(json.content);
-                            fetchProfile(json.content);
-                            getTasks(json.content);
-                        }
-                    }).catch(err => {
-                        console.log(err);
-                        toast.show({ type: 'error', position: 'bottom', autoHide: true, text1: 'Network error. Try again later' });
-                    })
-                }}
-            />
-            <Text
-                style={styles.createAccount}
-                onPress={() => {
-                    navigation.navigate('Register');
-                }}
-            >
-                Create account
-            </Text>
-        </View>
-    );
+    componentDidMount(){
+        if (this.props.sessionToken.length > 0){
+            this.props.navigation.navigate('ModalsStack');
+        }
+        console.log(this.props.sessionToken);
+    }
+
+    render() {
+        return (
+            <View style={{ flex: 1, top: '25%' }} >
+                <Text style={styles.title} >Task manager</Text>
+                <Input
+                    onChange={(e) => {
+                        this.setState({ name: e.nativeEvent.text });
+                    }}
+                    placeholder={'Name'} label={'Name'} selectionColor={'#e94560'}
+                    style={styles.textFields} leftIcon={<Icon name={'person'}
+                        color={'#e94560'} size={18} />}
+                />
+                <Input
+                    onChange={(e) => {
+                        this.setState({ password: e.nativeEvent.text });
+                    }}
+                    secureTextEntry={true} label={'Password'} selectionColor={'#e94560'}
+                    style={styles.textFields} leftIcon={<Icon name={'lock-closed'}
+                        color={'#e94560'} size={18} />}
+                    placeholder={'Password'}
+                />
+                <Button
+                    title={this.state.buttonTitle}
+                    disabled={this.state.loading}
+                    icon={<ActivityIndicator color={'#e94560'} animating={this.state.loading} />}
+                    onPress={() => {
+                        this.setState({ loading: true, buttonTitle: '' });
+                        let data = {
+                            name: this.state.name,
+                            password: this.state.password
+                        };
+                        loginRequest(data).then(json => {
+                            this.setState({ loading: false, buttonTitle: 'Login' });
+                            if (json.title !== 'Success') {
+                                toast.show({ type: 'error', position: 'bottom', autoHide: true, text1: json.content });
+                            }
+                            else {
+                                this.props.reduxSaveSessionToken(json.content);
+                                this.fetchProfile(json.content);
+                                this.getTasks(json.content);
+                            }
+                        }).catch(err => {
+                            console.log(err);
+                            toast.show({ type: 'error', position: 'bottom', autoHide: true, text1: 'Network error. Try again later' });
+                        })
+                    }}
+                />
+                <Text
+                    style={styles.createAccount}
+                    onPress={() => {
+                        this.props.navigation.navigate('Register');
+                    }}
+                >
+                    Create account
+                </Text>
+            </View>
+        )
+    }
+
 }
 
 async function loginRequest(data) {
@@ -144,6 +152,12 @@ const styles = {
     }
 }
 
+const mapStateToProps = (state) => {
+    return {
+        sessionToken: state.sessionToken
+    }
+}
+
 const mapDispatchToProps = (dispatch) => {
     return {
         reduxSaveSessionToken: (sessionToken) => {
@@ -161,4 +175,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(loginPage);
+export default connect(mapStateToProps, mapDispatchToProps)(loginPage);
