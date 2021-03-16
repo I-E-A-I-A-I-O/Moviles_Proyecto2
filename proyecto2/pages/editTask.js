@@ -5,6 +5,7 @@ import ImgPicker from '../components/imagePicker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import toast from 'react-native-toast-message';
 import Pushwoosh from 'pushwoosh-react-native-plugin';
+import ActionSheet from 'react-native-action-sheet';
 
 function EditTask({ route, navigation }) {
 
@@ -12,15 +13,18 @@ function EditTask({ route, navigation }) {
         taskId,
         taskName,
         taskDescription,
-        taskDate, taskTag,
+        taskDate,
+        taskTag,
         taskImage,
         token
     } = route.params;
 
+    const options = ['Yes', 'No'];
+
     const [name, setName] = useState(taskName);
     const [description, setDescription] = useState(taskDescription);
-    const [date, setDate] = useState((new Date(taskDate)).toISOString().split('T')[0]);
-    const [time, setTime] = useState((new Date(taskDate)).toLocaleTimeString());
+    const [date, setDate] = useState(new Date(taskDate));
+    const [time, setTime] = useState(new Date(taskDate));
     const [tag, setTag] = useState(taskTag);
     const [image, setImage] = useState(taskImage);
     const [imgType, setImgType] = useState('jpg');
@@ -34,6 +38,8 @@ function EditTask({ route, navigation }) {
     const [timeEdited, setTimeEdited] = useState(false);
     const [imageEdited, setImageEdited] = useState(false);
 
+    const [saving, setSaving] = useState(false);
+
     const onImgInput = (input) => {
         setImage(input.uri);
         setImgType(input.type);
@@ -45,12 +51,12 @@ function EditTask({ route, navigation }) {
         if (mode === 'date') {
             if (!dateEdited) { setDateEdited(true); }
             const currentDate = selectedDate || date;
-            setDate((new Date(currentDate)).toISOString().split('T')[0]);
+            setDate(currentDate);
         }
         else {
             if (!timeEdited) { setTimeEdited(true); }
             const currentDate = selectedDate || time;
-            setTime(typeof currentDate === 'string' ? currentDate : (new Date(currentDate)).toLocaleTimeString());
+            setTime(currentDate);
         }
     };
 
@@ -83,6 +89,7 @@ function EditTask({ route, navigation }) {
     const saveChanges = (type) => {
         Pushwoosh.getPushToken((pushToken) => {
             toast.show({ type: 'info', text1: 'Saving changes...', autoHide: false, position: 'bottom' });
+            setSaving(true);
             let form = new FormData();
             switch (type) {
                 case 'name': {
@@ -98,11 +105,11 @@ function EditTask({ route, navigation }) {
                     break;
                 }
                 case 'date': {
-                    form.append('date', date);
+                    form.append('date', date.toISOString().split('T')[0]);
                     break;
                 }
                 case 'time': {
-                    form.append('time', time);
+                    form.append('time', time.toLocaleTimeString());
                     break;
                 }
                 case 'image': {
@@ -122,18 +129,70 @@ function EditTask({ route, navigation }) {
                 }
             }).then(response => response.json())
                 .then(json => {
+                    setSaving(false);
                     toast.show({ type: json.title, text1: json.content, autoHide: true, position: 'bottom' });
+                    if (json.title === 'success') {
+                        switch (type) {
+                            case 'name': {
+                                setNameEdited(false);
+                                break;
+                            }
+                            case 'description': {
+                                setDescriptionEdited(false);
+                                break;
+                            }
+                            case 'tag': {
+                                setTagEdited(false);
+                                break;
+                            }
+                            case 'date': {
+                                setDateEdited(false);
+                                break;
+                            }
+                            case 'time': {
+                                setTimeEdited(false);
+                                break;
+                            }
+                            case 'image': {
+                                setImageEdited(false);
+                            }
+                        }
+                    }
                 }).catch(err => {
+                    setSaving(false);
                     toast.show({ type: 'error', text1: "Error saving changes. Try again later.", autoHide: true, position: 'bottom' });
                 })
         })
+    }
+
+    const deleteTask = () => {
+        ActionSheet.showActionSheetWithOptions({ options: options, title: 'Delete task?' }, (index) => {
+            if (index !== undefined) {
+                if (index === 0) {
+                    toast.show({ type: 'info', text1: 'Deleting...', autoHide: true, position: 'bottom' });
+                    fetch(`http://192.168.0.101:8000/tasks/task/${taskId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'authToken': token
+                        }
+                    }).then(response => response.json())
+                        .then(json => {
+                            toast.show({ type: json.title, text1: json.content, autoHide: true, position: 'bottom' });
+                            navigation.navigate('userPages', { screen: 'Dashboard', params: { refreshOnEnter: taskId } });
+                        }).catch(err => {
+                            console.error(err);
+                            toast.show({ type: 'error', text1: "Couldn't delete task", autoHide: true, position: 'bottom' });
+                        })
+                }
+            }
+        });
     }
 
     return (
         <ScrollView>
             <ImgPicker initialImage={image} onInput={onImgInput} />
             <Pressable
-                disabled={!imageEdited}
+                disabled={!imageEdited && !saving}
                 android_ripple={{
                     color: 'white',
                     borderless: true
@@ -142,7 +201,7 @@ function EditTask({ route, navigation }) {
                 <Icon
                     type={'font-awesome-5'}
                     name={'save'}
-                    color={imageEdited ? '#e94560' : 'gray'}
+                    color={imageEdited && !saving ? '#e94560' : 'gray'}
                     onPress={() => (saveChanges('image'))}
                 />
             </Pressable>
@@ -155,7 +214,7 @@ function EditTask({ route, navigation }) {
                 onChange={(evn) => (onInput('name', evn.nativeEvent.text))}
                 rightIcon={
                     <Pressable
-                        disabled={!nameEdited}
+                        disabled={!nameEdited && !saving}
                         android_ripple={{
                             color: 'white',
                             borderless: true
@@ -164,7 +223,7 @@ function EditTask({ route, navigation }) {
                         <Icon
                             type={'font-awesome-5'}
                             name={'save'}
-                            color={nameEdited ? '#e94560' : 'gray'}
+                            color={nameEdited && !saving ? '#e94560' : 'gray'}
                             onPress={() => (saveChanges('name'))}
                         />
                     </Pressable>
@@ -180,7 +239,7 @@ function EditTask({ route, navigation }) {
                 onChange={(evn) => (onInput('description', evn.nativeEvent.text))}
                 rightIcon={
                     <Pressable
-                        disabled={!descriptionEdited}
+                        disabled={!descriptionEdited && !saving}
                         android_ripple={{
                             color: 'white',
                             borderless: true
@@ -189,7 +248,7 @@ function EditTask({ route, navigation }) {
                         <Icon
                             type={'font-awesome-5'}
                             name={'save'}
-                            color={descriptionEdited ? '#e94560' : 'gray'}
+                            color={descriptionEdited && !saving ? '#e94560' : 'gray'}
                             onPress={() => (saveChanges('description'))}
                         />
                     </Pressable>
@@ -204,7 +263,7 @@ function EditTask({ route, navigation }) {
                 onChange={(evn) => (onInput('tag', evn.nativeEvent.text))}
                 rightIcon={
                     <Pressable
-                        disabled={!tagEdited}
+                        disabled={!tagEdited && !saving}
                         android_ripple={{
                             color: 'white',
                             borderless: true
@@ -213,7 +272,7 @@ function EditTask({ route, navigation }) {
                         <Icon
                             type={'font-awesome-5'}
                             name={'save'}
-                            color={tagEdited ? '#e94560' : 'gray'}
+                            color={tagEdited && !saving ? '#e94560' : 'gray'}
                             onPress={() => (saveChanges('tag'))}
                         />
                     </Pressable>
@@ -226,14 +285,14 @@ function EditTask({ route, navigation }) {
             >
                 <Input
                     label={'Date'}
-                    value={date}
+                    value={date.toISOString().split('T')[0]}
                     style={{
                         color: '#dbd8e3'
                     }}
                     disabled={true}
                     rightIcon={
                         <Pressable
-                            disabled={!dateEdited}
+                            disabled={!dateEdited && !saving}
                             android_ripple={{
                                 color: 'white',
                                 borderless: true
@@ -242,7 +301,7 @@ function EditTask({ route, navigation }) {
                             <Icon
                                 type={'font-awesome-5'}
                                 name={'save'}
-                                color={dateEdited ? '#e94560' : 'gray'}
+                                color={dateEdited && !saving ? '#e94560' : 'gray'}
                                 onPress={() => (saveChanges('date'))}
                             />
                         </Pressable>
@@ -256,14 +315,14 @@ function EditTask({ route, navigation }) {
             >
                 <Input
                     label={'Time'}
-                    value={time}
+                    value={time.toLocaleTimeString().slice(0, 5)}
                     style={{
                         color: '#dbd8e3'
                     }}
                     disabled={true}
                     rightIcon={
                         <Pressable
-                            disabled={!timeEdited}
+                            disabled={!timeEdited && !saving}
                             android_ripple={{
                                 color: 'white',
                                 borderless: true
@@ -272,11 +331,24 @@ function EditTask({ route, navigation }) {
                             <Icon
                                 type={'font-awesome-5'}
                                 name={'save'}
-                                color={timeEdited ? '#e94560' : 'gray'}
+                                color={timeEdited && !saving ? '#e94560' : 'gray'}
                                 onPress={() => (saveChanges('time'))}
                             />
                         </Pressable>
                     }
+                />
+            </Pressable>
+            <Pressable
+                android_ripple={{
+                    color: 'white',
+                    borderless: true
+                }}
+            >
+                <Icon
+                    type={'font-awesome-5'}
+                    name={'trash'}
+                    color={'#e94560'}
+                    onPress={deleteTask}
                 />
             </Pressable>
             {show && (

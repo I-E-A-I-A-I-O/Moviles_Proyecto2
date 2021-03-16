@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, ToastAndroid } from 'react-native';
 import { Button, Input, Text } from 'react-native-elements';
 import RNToastMessage from 'react-native-toast-message';
@@ -11,12 +11,19 @@ import { savePinnedTasks } from '../actions/savePinnedTasks';
 import { store } from '../store/store';
 import { connect } from 'react-redux';
 
-function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder, reduxToPinned,
-    reduxToNormal, tasks, pinned
+function Dashboard({ route, navigation, sessionToken, reduxSavePinned, reduxSaveReorder,
+    reduxToPinned, reduxToNormal, tasks, pinned
 }) {
 
     const [loading, setLoading] = useState(false);
     const [title, setTitle] = useState('New task / Refresh');
+    const [filter, setFilter] = useState('');
+
+    useEffect(() => {
+        if (route.params?.refreshOnEnter) {
+            refresh(sessionToken);
+        }
+    }, [route.params?.refreshOnEnter]);
 
     const refresh = async (token) => {
         setLoading(true);
@@ -93,7 +100,11 @@ function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder
 
     return (
         <View style={{ flex: 1 }}>
-            <Input style={{ color: 'white' }} label={'Search task'} />
+            <Input
+                style={{ color: 'white' }}
+                label={'Search task'}
+                onChange={(ev) => (setFilter(ev.nativeEvent.text))}
+            />
             <Button
                 title={title}
                 disabled={loading}
@@ -121,7 +132,12 @@ function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder
                         >
                             Pinned tasks
                 </Text>
-                        <Draggable tasks={pinned} onChange={doOnChange} type={'pinned'} />
+                        <Draggable
+                            tasks={pinned}
+                            onChange={doOnChange}
+                            type={'pinned'}
+                            filter={filter.length > 0 ? filter : null}
+                        />
                     </View>
                 )}
             {
@@ -137,7 +153,11 @@ function Dashboard({ navigation, sessionToken, reduxSavePinned, reduxSaveReorder
                         >
                             Tasks
                 </Text>
-                        <Draggable tasks={tasks} onChange={doOnChange} />
+                        <Draggable
+                            tasks={tasks}
+                            onChange={doOnChange}
+                            filter={filter.length > 0 ? filter : null}
+                        />
                     </View>
                 )}
         </View>

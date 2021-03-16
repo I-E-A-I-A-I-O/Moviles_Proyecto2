@@ -79,18 +79,20 @@ const editDate = async (taskId, req, res, type, pushtoken) => {
                         let dateString;
                         if (type === 'date') {
                             let { date } = fields;
-                            param = results.rows[0].complete_date.split(' ')[1];
+                            param = (new Date(results.rows[0].complete_date)).toLocaleTimeString('en-US', { hour12: false }).slice(0, 5);
+                            console.info(date[0]);
+                            console.info(param);
                             dateString = `${date[0]} ${param}`;
                         }
                         else if (type === 'time') {
                             let { time } = fields;
-                            param = results.rows[0].complete_date.split(' ')[0];
+                            param = new Date(results.rows[0].complete_date).toISOString().split('T')[0];
                             dateString = `${param} ${time[0]}`;
                         }
                         query = 'UPDATE task SET complete_date = $1 WHERE task_id = $2';
                         params = [dateString, taskId];
                         await client.query('BEGIN', []);
-                        await client.query(query, param);
+                        await client.query(query, params);
                         pwClient.sendMessage(results.rows[0].name, pushtoken,
                             {
                                 send_date: dateString,
@@ -106,12 +108,18 @@ const editDate = async (taskId, req, res, type, pushtoken) => {
                                         res.status(500).json({ title: 'error', content: 'Could not save changes.' });
                                     }
                                     else {
-                                        query = 'UPADTE current_tasks SET message_code = $1 WHERE task_id = $2';
-                                        params = [response.Messages[0], taskId];
-                                        await client.query(query, params);
-                                        await client.query('COMMIT', []);
-                                        res.status(200).title({ title: 'success', content: 'Changes saved.' });
-                                        pwClient.deleteMessage(results.rows[0].message_code, (error, response) => { })
+                                        console.info(JSON.stringify(response))
+                                        if (response.description) {
+                                            res.status(400).json({ title: 'error', content: 'Invalid date' });
+                                        }
+                                        else {
+                                            query = 'UPDATE current_tasks SET message_code = $1 WHERE task_id = $2';
+                                            params = [response.Messages[0], taskId];
+                                            await client.query(query, params);
+                                            await client.query('COMMIT', []);
+                                            res.status(200).json({ title: 'success', content: 'Changes saved.' });
+                                            pwClient.deleteMessage(results.rows[0].message_code, (error, response) => { })
+                                        }
                                     }
                                 })()
                             })

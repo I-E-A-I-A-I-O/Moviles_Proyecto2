@@ -8,7 +8,7 @@ import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist';
 
-const FlatList = ({ tasks, type = 'normal', onChange }) => {
+const FlatList = ({ tasks, type = 'normal', onChange, filter }) => {
 
   const navigation = useNavigation();
 
@@ -65,7 +65,7 @@ const FlatList = ({ tasks, type = 'normal', onChange }) => {
               justifyContent: 'center',
             }}
           >
-            {item.tag.length > 0 ? item.tag : 'No tag'}
+            {item.tag}
           </Text>
           <IonIcons
             style={{ alignSelf: 'flex-end', position: 'absolute', top: '30%', right: '2%' }}
@@ -81,7 +81,7 @@ const FlatList = ({ tasks, type = 'normal', onChange }) => {
 
   return (
     <DraggableFlatList
-      data={tasks}
+      data={filter ? applyFilter(filter, tasks) : tasks}
       renderItem={renderItem}
       keyExtractor={(item, index) => `draggable-item-${item.task_id}`}
       onDragEnd={({ data, from, to }) => {
@@ -92,6 +92,12 @@ const FlatList = ({ tasks, type = 'normal', onChange }) => {
       }}
     />
   );
+}
+
+const applyFilter = (filter, tasks) => {
+  let filteredName = tasks.filter((value) => value.name.includes(filter));
+  let filteredTag = tasks.filter((value) => value.tag.includes(filter));
+  return [...filteredName, ...filteredTag];
 }
 
 const moveIndexes = (array) => {
