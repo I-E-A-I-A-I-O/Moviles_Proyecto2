@@ -32,6 +32,10 @@
 		BE4380629A924EA88113C544 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 339C004304A44A6AB2251E67 /* Octicons.ttf */; };
 		7FD11DB0A84743BBA8C49152 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E91085BC99AA4D1C83DB52B2 /* SimpleLineIcons.ttf */; };
 		5892DC1C65D649898A8C010A /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA485F2FE6C0433DA0F4DE7B /* Zocial.ttf */; };
+		C50D82A2803843FCB1AD2B69 /* errorMessage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C49F5569129A456098C38A8F /* errorMessage@2x.png */; };
+		DB6997BDD16048BCBBB4969A /* inbox_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A2628F94FD62479D91480D0D /* inbox_icon.png */; };
+		261D35E231764ADD8435EC30 /* noMessage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A1449D87779F4A1786F7085F /* noMessage@2x.png */; };
+		6314B8FC9E1848A39B1D3BD4 /* unread.png in Resources */ = {isa = PBXBuildFile; fileRef = 32FA8AA717ED42278B5A7103 /* unread.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +87,10 @@
 		339C004304A44A6AB2251E67 /* Octicons.ttf */ = {isa = PBXFileReference; name = "Octicons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		E91085BC99AA4D1C83DB52B2 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; name = "SimpleLineIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		AA485F2FE6C0433DA0F4DE7B /* Zocial.ttf */ = {isa = PBXFileReference; name = "Zocial.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C49F5569129A456098C38A8F /* errorMessage@2x.png */ = {isa = PBXFileReference; name = "errorMessage@2x.png"; path = "../node_modules/pushwoosh-react-native-plugin/src/ios/PushwooshInboxBundle.bundle/errorMessage@2x.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A2628F94FD62479D91480D0D /* inbox_icon.png */ = {isa = PBXFileReference; name = "inbox_icon.png"; path = "../node_modules/pushwoosh-react-native-plugin/src/ios/PushwooshInboxBundle.bundle/inbox_icon.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A1449D87779F4A1786F7085F /* noMessage@2x.png */ = {isa = PBXFileReference; name = "noMessage@2x.png"; path = "../node_modules/pushwoosh-react-native-plugin/src/ios/PushwooshInboxBundle.bundle/noMessage@2x.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		32FA8AA717ED42278B5A7103 /* unread.png */ = {isa = PBXFileReference; name = "unread.png"; path = "../node_modules/pushwoosh-react-native-plugin/src/ios/PushwooshInboxBundle.bundle/unread.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,6 +217,10 @@
 				339C004304A44A6AB2251E67 /* Octicons.ttf */,
 				E91085BC99AA4D1C83DB52B2 /* SimpleLineIcons.ttf */,
 				AA485F2FE6C0433DA0F4DE7B /* Zocial.ttf */,
+				C49F5569129A456098C38A8F /* errorMessage@2x.png */,
+				A2628F94FD62479D91480D0D /* inbox_icon.png */,
+				A1449D87779F4A1786F7085F /* noMessage@2x.png */,
+				32FA8AA717ED42278B5A7103 /* unread.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -368,6 +380,10 @@
 				BE4380629A924EA88113C544 /* Octicons.ttf in Resources */,
 				7FD11DB0A84743BBA8C49152 /* SimpleLineIcons.ttf in Resources */,
 				5892DC1C65D649898A8C010A /* Zocial.ttf in Resources */,
+				C50D82A2803843FCB1AD2B69 /* errorMessage@2x.png in Resources */,
+				DB6997BDD16048BCBBB4969A /* inbox_icon.png in Resources */,
+				261D35E231764ADD8435EC30 /* noMessage@2x.png in Resources */,
+				6314B8FC9E1848A39B1D3BD4 /* unread.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

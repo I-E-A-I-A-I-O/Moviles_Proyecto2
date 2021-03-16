@@ -1877,11 +1877,6 @@
   "resolved" "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.0.tgz"
   "version" "1.0.0"
 
-"base-64@0.1.0":
-  "integrity" "sha1-eAqZyE59YAJgNhURxId2E78k9rs="
-  "resolved" "https://registry.npmjs.org/base-64/-/base-64-0.1.0.tgz"
-  "version" "0.1.0"
-
 "base@^0.11.1":
   "integrity" "sha512-5T6P4xPgpp0YDFvSWwEZ4NoE3aM4QBQXDzmVbraCkFj8zHM+mba8SyqB5DbZWyR7mYHo6Y7BdQo3MoA4m0TeQg=="
   "resolved" "https://registry.npmjs.org/base/-/base-0.11.2.tgz"
@@ -3477,18 +3472,6 @@
     "inflight" "^1.0.4"
     "inherits" "2"
     "minimatch" "^3.0.4"
-    "once" "^1.3.0"
-    "path-is-absolute" "^1.0.0"
-
-"glob@7.0.6":
-  "integrity" "sha1-IRuvr0nlJbjNkyYNFKsTYVKz9Xo="
-  "resolved" "https://registry.npmjs.org/glob/-/glob-7.0.6.tgz"
-  "version" "7.0.6"
-  dependencies:
-    "fs.realpath" "^1.0.0"
-    "inflight" "^1.0.4"
-    "inherits" "2"
-    "minimatch" "^3.0.2"
     "once" "^1.3.0"
     "path-is-absolute" "^1.0.0"
 
@@ -5270,7 +5253,7 @@
   "resolved" "https://registry.npmjs.org/mimic-fn/-/mimic-fn-2.1.0.tgz"
   "version" "2.1.0"
 
-"minimatch@^3.0.2", "minimatch@^3.0.4":
+"minimatch@^3.0.4":
   "integrity" "sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA=="
   "resolved" "https://registry.npmjs.org/minimatch/-/minimatch-3.0.4.tgz"
   "version" "3.0.4"
@@ -5998,14 +5981,6 @@
     "prop-types" "^15.7.2"
     "react-native-ratings" "^7.3.0"
     "react-native-size-matters" "^0.3.1"
-
-"react-native-fetch-blob@^0.10.8":
-  "integrity" "sha1-T8JWq64MtfEOfEHyjBGz/zMNcqk="
-  "resolved" "https://registry.npmjs.org/react-native-fetch-blob/-/react-native-fetch-blob-0.10.8.tgz"
-  "version" "0.10.8"
-  dependencies:
-    "base-64" "0.1.0"
-    "glob" "7.0.6"
 
 "react-native-gesture-handler@*", "react-native-gesture-handler@^1.0.0", "react-native-gesture-handler@^1.10.3", "react-native-gesture-handler@^1.6.1", "react-native-gesture-handler@>= 1.0.0":
   "integrity" "sha512-cBGMi1IEsIVMgoox4RvMx7V2r6bNKw0uR1Mu1o7NbuHS6BRSVLq0dP34l2ecnPlC+jpWd3le6Yg1nrdCjby2Mw=="
