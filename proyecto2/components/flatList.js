@@ -1,30 +1,33 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Pressable } from 'react-native';
-import { connect } from 'react-redux';
 import IonIcons from 'react-native-vector-icons/FontAwesome5';
-import { Text, Tooltip } from 'react-native-elements';
-import { saveTasksData } from '../actions/saveTasksData';
+import { Text } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
 
 import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist';
 
-function FlatList({ tasks, reduxSaveReorder }) {
+const FlatList = ({ tasks, type = 'normal', onChange, filter }) => {
 
-  type Task = {
-    task_id: string,
-    name: string,
-    tag: string,
-    list_index: number
-  };
+  const navigation = useNavigation();
+
+  const pinChange = (taskId) => {
+    if (type === 'normal') {
+      onChange('toPinned', taskId);
+    }
+    else {
+      onChange('toNormal', taskId);
+    }
+  }
 
   const renderItem = useCallback(
-    ({ item, index, drag, isActive }: RenderItemParams<Task>) => {
+    ({ item, index, drag, isActive }: RenderItemParams<any>) => {
       return (
         <Pressable
           style={{
             height: 70,
-            backgroundColor: isActive ? '#747f91' : '#3e443d',
+            backgroundColor: type === 'normal' ? isActive ? '#747f91' : '#303841' : '#ff4d00',
             justifyContent: 'center',
             borderColor: 'black',
             borderStyle: 'solid',
@@ -33,23 +36,43 @@ function FlatList({ tasks, reduxSaveReorder }) {
           }}
           android_ripple={{ color: 'white' }}
           focusable={true}
-          onLongPress={drag}>
+          onPress={() => {
+            navigation.navigate('ModalsStack',
+              { screen: 'taskDetails', params: { taskId: item.task_id } });
+          }}
+          onLongPress={() => {
+            if (type === 'normal') {
+              drag();
+            }
+          }}>
           <Text
             style={{
               fontWeight: 'bold',
               color: 'white',
               fontSize: 32,
               alignSelf: 'flex-start',
+              justifyContent: 'center',
               paddingLeft: 15
             }}>
             {item.name}
           </Text>
           <Text
-            style={{fontWeight: 'bold', color:'#d3e5b5', position: 'absolute', left:'60%'}}
+            style={{
+              fontWeight: 'bold',
+              color: '#dbd8e3',
+              position: 'absolute',
+              left: '70%',
+              justifyContent: 'center',
+            }}
           >
-            {item.tag.length > 0 ? item.tag : 'No tag'}
+            {item.tag}
           </Text>
-          <IonIcons style={{ alignSelf: 'flex-end', position: 'absolute', top: '30%', right: '2%' }} name={'star'} color={'gold'} size={30} />
+          <IonIcons
+            style={{ alignSelf: 'flex-end', position: 'absolute', top: '30%', right: '2%' }}
+            name={'star'} color={'gold'} size={25}
+            solid={type !== 'normal'}
+            onPress={() => (pinChange(item.current_task_id))}
+          />
         </Pressable>
       );
     },
@@ -58,17 +81,23 @@ function FlatList({ tasks, reduxSaveReorder }) {
 
   return (
     <DraggableFlatList
-      data={tasks}
+      data={filter ? applyFilter(filter, tasks) : tasks}
       renderItem={renderItem}
       keyExtractor={(item, index) => `draggable-item-${item.task_id}`}
       onDragEnd={({ data, from, to }) => {
         if (from !== to) {
           moveIndexes(data);
-          reduxSaveReorder(data);
+          onChange('reorder', data);
         }
       }}
     />
   );
+}
+
+const applyFilter = (filter, tasks) => {
+  let filteredName = tasks.filter((value) => value.name.includes(filter));
+  let filteredTag = tasks.filter((value) => value.tag.includes(filter));
+  return [...filteredName, ...filteredTag];
 }
 
 const moveIndexes = (array) => {
@@ -77,18 +106,4 @@ const moveIndexes = (array) => {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    tasks: state.tasksData
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    reduxSaveReorder: (newArray) => {
-      dispatch(saveTasksData(newArray));
-    }
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(FlatList);
+export default FlatList;

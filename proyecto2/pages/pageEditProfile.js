@@ -3,7 +3,6 @@ import { ActivityIndicator, ScrollView, ToastAndroid } from 'react-native';
 import { Card, Input, Button } from 'react-native-elements';
 import ImagePicker from '../components/imagePicker';
 
-
 function pageEditProfile({sessionToken}) {
     let [name, setName] = useState('');
     let [password, setPassword] = useState('');
@@ -21,6 +20,7 @@ function pageEditProfile({sessionToken}) {
     return (
         <ScrollView>
             <Card containerStyle={{ backgroundColor: '#1F262A', borderColor: 'black' }} >
+
                 <ImagePicker onInput={fileInput} />
                 <Card.Divider />
                 <Input
@@ -62,7 +62,6 @@ function pageEditProfile({sessionToken}) {
         </ScrollView>
     );
 }
-
 
 async function fetchData(data) {
     let formData = new FormData();

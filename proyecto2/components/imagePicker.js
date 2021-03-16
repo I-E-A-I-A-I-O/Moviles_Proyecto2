@@ -4,9 +4,10 @@ import { Card } from 'react-native-elements';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ActionSheet from 'react-native-action-sheet';
 
-function imagePicker({ onInput, context = 'avatar' }) {
+function imagePicker({ onInput, context = 'avatar', initialImage = null }) {
     const [type, setType] = useState('jpg');
-    const [avatar, setAvatar] = useState(context === 'avatar' ?
+    const [avatar, setAvatar] = useState(
+        initialImage ? initialImage : context === 'avatar' ?
         'http://www.myteespot.com/images/Images_d/img_P02O9i.jpg' : 'https://www.psionline.com/wp-content/uploads/placeholder-icon.png'
     );
 

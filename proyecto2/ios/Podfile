@@ -14,6 +14,10 @@ target 'proyecto2' do
 
   pod 'react-native-notifications', :path => '../node_modules/react-native-notifications'
 
+  pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
+
+  pod 'pushwoosh-react-native-plugin', :path => '../node_modules/pushwoosh-react-native-plugin'
+
   target 'proyecto2Tests' do
     inherit! :complete
     # Pods for testing

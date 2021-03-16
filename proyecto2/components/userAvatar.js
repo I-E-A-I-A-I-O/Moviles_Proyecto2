@@ -2,6 +2,7 @@ import React from 'react';
 import {Avatar} from 'react-native-elements';
 import {View} from 'react-native';
 import {connect} from 'react-redux';
+
 function UserAvatar({userData}) {
     return(
         <View style={{padding: 10}} >

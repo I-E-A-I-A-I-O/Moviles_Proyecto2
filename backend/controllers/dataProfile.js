@@ -4,7 +4,7 @@ const mp = require('multiparty');
 const fse = require('fs-extra');
 const bcrypt = require('bcrypt');
 
- 
+
 const editProfile = async (req,res) => {
     let token = req.headers.authtoken;
     let verified = await tokenVerifier.verifyToken(token);

@@ -34,7 +34,6 @@ function pageProfile({ navigation, userData }){
                 <Text style={{color: '#6699FF', fontSize: 17}}>Taks Create: {}</Text>
                 <Text style={{color: '#6699FF', fontSize: 17}}>Task Completed: {}</Text>
                 <Text style={{color: '#6699FF', fontSize: 17}}>Task Pinned: {}</Text>
-
             </Card>
         </ScrollView>
     )

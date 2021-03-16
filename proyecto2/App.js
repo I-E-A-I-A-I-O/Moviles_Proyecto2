@@ -1,12 +1,12 @@
 import 'react-native-gesture-handler';
 
-import { Notifications} from 'react-native-notifications';
+import { Notifications } from 'react-native-notifications';
 
 Notifications.events().registerNotificationReceivedForeground((notification, completion) => {
   let id = JSON.parse(notification.payload.u).task_id;
   completeTask(id);
-  Notifications.postLocalNotification({title: notification.title})
-  completion({alert: true, sound: true, badge: true});
+  Notifications.postLocalNotification({ title: notification.title })
+  completion({ alert: true, sound: true, badge: true });
 })
 
 Notifications.events().registerNotificationReceivedBackground((notification, completion) => {
@@ -31,7 +31,7 @@ Pushwoosh.init({
 Pushwoosh.register((success, fail) => { });
 
 import React from 'react';
-import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -41,13 +41,26 @@ import EditProfile from './pages/pageEditProfile';
 import { PersistGate } from 'redux-persist/es/integration/react';
 import { Provider } from 'react-redux';
 import { store, persistor } from './store/store';
-import { not } from 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
+
+const myTheme = {
+  dark: true,
+  colors: {
+    primary: '#dbd8e3',
+    background: '#222831',
+    card: '#393e46',
+    text: 'white',
+    border: '#222831',
+    notification: 'red'
+  }
+}
 
 const Stack = createStackNavigator();
 
 const App: () => React$Node = () => {
 
   return (
+    <>
     <Provider store={store} >
       <PersistGate loading={null} persistor={persistor} >
         <NavigationContainer theme={DarkTheme}>
@@ -61,6 +74,8 @@ const App: () => React$Node = () => {
         </NavigationContainer>
       </PersistGate>
     </Provider>
+    <Toast autoHide={false} ref={(ref) => Toast.setRef(ref)} />
+    </>
   );
 };
 
