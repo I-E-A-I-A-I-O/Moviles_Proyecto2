@@ -93,7 +93,7 @@ const editDate = async (taskId, req, res, type, pushtoken) => {
                         params = [dateString, taskId];
                         await client.query('BEGIN', []);
                         await client.query(query, params);
-                        pwClient.sendMessage(results.rows[0].name, pushtoken,
+                        pwClient.sendMessage(`${results.rows[0].name}. Tap to delete task.`, pushtoken,
                             {
                                 send_date: dateString,
                                 timezone: 'America/Caracas',

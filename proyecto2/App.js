@@ -3,14 +3,17 @@ import 'react-native-gesture-handler';
 import { Notifications } from 'react-native-notifications';
 
 Notifications.events().registerNotificationReceivedForeground((notification, completion) => {
-  let id = JSON.parse(notification.payload.u).task_id;
-  completeTask(id);
-  Notifications.postLocalNotification({ title: notification.title })
+  Notifications.postLocalNotification({ title: notification.title });
   completion({ alert: true, sound: true, badge: true });
 })
 
 Notifications.events().registerNotificationReceivedBackground((notification, completion) => {
+  completion({alert: true, sound: true, badge: false});
+})
+
+Notifications.events().registerNotificationOpened((notification, completion) => {
   let id = JSON.parse(notification.payload.u).task_id;
+  completion();
   completeTask(id);
 })
 

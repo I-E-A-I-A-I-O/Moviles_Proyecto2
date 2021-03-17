@@ -74,7 +74,7 @@ const insertTaskData = async (userId, pushToken, data, file = null, res) => {
         let complete_date = `${data.date}T${data.time}`;
         let params = [userId, data.name, data.description, complete_date, data.tag.length > 0 ? data.tag.length : 'No tag.'];
         let result = await client.query(query, params);
-        getClient().sendMessage(data.name, [pushToken], { send_date: `${data.date} ${data.time}`, timezone: 'America/Caracas', data: { task_id: result.rows[0].task_id } }, (error, response) => {
+        getClient().sendMessage(`${data.name}. Tap to delete task.`, [pushToken], { send_date: `${data.date} ${data.time}`, timezone: 'America/Caracas', data: { task_id: result.rows[0].task_id } }, (error, response) => {
             if (!error) {
                 if (response.description) {
                     console.error(JSON.stringify(response));
