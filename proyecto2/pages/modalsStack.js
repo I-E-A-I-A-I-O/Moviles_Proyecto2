@@ -4,6 +4,7 @@ import UserPages from './userPages';
 import CreateTaskModal from './createTaskModal';
 import TaskDetails from './taskDetails';
 import EditTask from './editTask';
+import pageEditProfile from './pageEditProfile'
 
 const Stack = createStackNavigator();
 
@@ -29,6 +30,11 @@ function ModalsStack() {
                 name={'editTask'}
                 component={EditTask}
                 options={{title: 'Edit task'}}
+            />
+            <Stack.Screen
+                name={'pageEditProfile'}
+                component={pageEditProfile}
+                options={{title: 'Edit Profile'}}
             />
         </Stack.Navigator>
     );
