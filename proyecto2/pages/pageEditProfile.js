@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, ToastAndroid } from 'react-native';
 import { Card, Input, Button } from 'react-native-elements';
 import ImagePicker from '../components/imagePicker';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 
-function pageEditProfile({sessionToken}) {
+function pageEditProfile({ sessionToken }) {
     let [name, setName] = useState('');
     let [password, setPassword] = useState('');
     let [email, setEmail] = useState('');
@@ -39,7 +39,7 @@ function pageEditProfile({sessionToken}) {
                         setPassword(e.nativeEvent.text);
                     }}
                     style={styles.textFields} label={'Password'} secureTextEntry={true} placeholder={'Password'} />
-                    
+
                 <Button title={buttonTitle} onPress={() => {
                     setButtonTitle('');
                     setLoading(true);
@@ -76,7 +76,7 @@ async function fetchData(data) {
             uri: data.avatar
         });
     }
-    let request = await fetch('http://192.168.0.107:8000/users/editProfile', {
+    let request = await fetch('https://moviles-proyecto2.herokuapp.com/users/editProfile', {
         method: 'POST',
         body: formData,
         headers: {

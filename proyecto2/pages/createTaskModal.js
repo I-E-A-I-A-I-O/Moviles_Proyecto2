@@ -58,7 +58,7 @@ function CreateTask({ navigation, sessionToken }) {
                     uri: fileURI
                 });
             }
-            fetch('http://192.168.0.101:8000/tasks', {
+            fetch('https://moviles-proyecto2.herokuapp.com/tasks', {
                 method: 'POST',
                 body: form,
                 headers: {

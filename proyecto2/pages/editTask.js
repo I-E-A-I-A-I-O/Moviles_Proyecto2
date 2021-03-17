@@ -120,7 +120,7 @@ function EditTask({ route, navigation }) {
                     })
                 }
             }
-            fetch(`http://192.168.0.101:8000/tasks/task/${taskId}/${type}`, {
+            fetch(`https://moviles-proyecto2.herokuapp.com/tasks/task/${taskId}/${type}`, {
                 method: 'PUT',
                 body: form,
                 headers: {
@@ -170,7 +170,7 @@ function EditTask({ route, navigation }) {
             if (index !== undefined) {
                 if (index === 0) {
                     toast.show({ type: 'info', text1: 'Deleting...', autoHide: true, position: 'bottom' });
-                    fetch(`http://192.168.0.101:8000/tasks/task/${taskId}`, {
+                    fetch(`https://moviles-proyecto2.herokuapp.com/tasks/task/${taskId}`, {
                         method: 'DELETE',
                         headers: {
                             'authToken': token
