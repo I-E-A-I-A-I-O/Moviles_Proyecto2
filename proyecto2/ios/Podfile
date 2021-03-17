@@ -18,6 +18,8 @@ target 'proyecto2' do
 
   pod 'pushwoosh-react-native-plugin', :path => '../node_modules/pushwoosh-react-native-plugin'
 
+  pod 'RNSVG', :path => '../node_modules/react-native-svg'
+
   target 'proyecto2Tests' do
     inherit! :complete
     # Pods for testing
