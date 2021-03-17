@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 8000;
 
-//let whitelist = ['http://localhost']
+let whitelist = ['http://localhost']
 
 let pushWooshRoutes = require('./routers/pushWooshRoutes');
 let userAuthenticationRoutes = require('./routers/userAuth');

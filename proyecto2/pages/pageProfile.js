@@ -3,7 +3,7 @@ import { ScrollView, Text, View, Button, Image } from 'react-native';
 import { Card } from 'react-native-elements';
 import { connect } from 'react-redux';
 
-function pageProfile({ navigation, userData }){
+function pageProfile({ navigation, userData, sessionToken }){
 
     return (
         <ScrollView >
@@ -39,10 +39,6 @@ function pageProfile({ navigation, userData }){
     )
 }
 
-async function requestTaskStasts(){
-
-    
-}
 
 const mapStateToProps = (state) => {
     return {

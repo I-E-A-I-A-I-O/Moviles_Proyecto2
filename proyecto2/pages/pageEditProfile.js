@@ -89,8 +89,15 @@ async function fetchData(data) {
 
 const styles = {
     textFields: {
-        color: '#6699FF'
+        color: 'white'
     }
 }
 
-export default pageEditProfile;
+const mapStateToProps = (state) => {
+    return {
+        sessionToken: state.sessionToken
+    }
+}
+
+export default connect(mapStateToProps, null)(pageEditProfile);
+
