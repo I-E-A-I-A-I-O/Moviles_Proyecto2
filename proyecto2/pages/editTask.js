@@ -6,8 +6,19 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import toast from 'react-native-toast-message';
 import Pushwoosh from 'pushwoosh-react-native-plugin';
 import ActionSheet from 'react-native-action-sheet';
+import { connect } from 'react-redux';
+import { saveUserStats } from '../actions/saveUserStats';
+import { fetchStats } from '../components/fetchStats'
 
-function EditTask({ route, navigation }) {
+const mapDispatchToProps = (dispatch) => {
+    return {
+        reduxSaveStats: (stats) => {
+            dispatch(saveUserStats(stats));
+        }
+    }
+}
+
+function EditTask({ route, navigation, reduxSaveStats }) {
 
     const {
         taskId,
@@ -177,6 +188,9 @@ function EditTask({ route, navigation }) {
                         }
                     }).then(response => response.json())
                         .then(json => {
+                            fetchStats(token).then(data => {
+                                reduxSaveStats(data);
+                            })
                             toast.show({ type: json.title, text1: json.content, autoHide: true, position: 'bottom' });
                             navigation.navigate('userPages', { screen: 'Dashboard', params: { refreshOnEnter: taskId } });
                         }).catch(err => {
@@ -365,4 +379,4 @@ function EditTask({ route, navigation }) {
     )
 }
 
-export default EditTask;
+export default connect(null, mapDispatchToProps)(EditTask);
