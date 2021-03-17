@@ -6,7 +6,8 @@ const initialState = {
         avatar: ''
     },
     tasksData: [],
-    pinnedTasks: []
+    pinnedTasks: [],
+    userStats: [0, 0, 0, 0]
 };
 
 export default (state = initialState, action) => {
@@ -53,6 +54,12 @@ export default (state = initialState, action) => {
                 ...state,
                 tasksData: [...state.tasksData, addIndexToNewNormal(state, action.taskId)],
                 pinnedTasks: state.pinnedTasks.filter((value) => value.current_task_id !== action.taskId)
+            }
+        }
+        case 'SAVE_USER_STATS': {
+            return {
+                ...state,
+                userStats: action.userStats
             }
         }
         default: {

@@ -6,8 +6,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import ImagePicker from '../components/imagePicker';
 import Pushwoosh from 'pushwoosh-react-native-plugin';
 import { connect } from 'react-redux';
+import { fetchStats } from '../components/fetchStats';
+import { saveUserStats } from '../actions/saveUserStats';
 
-function CreateTask({ navigation, sessionToken }) {
+function CreateTask({ navigation, sessionToken, reduxSaveStats }) {
     const offset = (new Date).getTimezoneOffset() * 60000;
     const [date, setDate] = useState(new Date(Date.now() - offset));
     const [show, setShow] = useState(false);
@@ -70,6 +72,9 @@ function CreateTask({ navigation, sessionToken }) {
                     toast.show({ type: json.title.toLowerCase(), position: 'bottom', autoHide: true, text1: json.content });
                     setLoading(false);
                     setButtonTitle('Save task');
+                    fetchStats(sessionToken).then(data => {
+                        reduxSaveStats(data);
+                    })
                 })
                 .catch(err => {
                     console.log(err);
@@ -132,4 +137,12 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, null)(CreateTask);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        reduxSaveStats: (stats) => {
+            dispatch(saveUserStats(stats));
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreateTask);

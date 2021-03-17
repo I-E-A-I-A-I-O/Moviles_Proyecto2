@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ScrollView, Pressable, Platformm, View } from 'react-native';
-import { Input, Button, Icon } from 'react-native-elements';
+import { ScrollView, Pressable } from 'react-native';
+import { Input, Icon } from 'react-native-elements';
 import ImgPicker from '../components/imagePicker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import toast from 'react-native-toast-message';
