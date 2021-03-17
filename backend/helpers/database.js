@@ -2,10 +2,6 @@ const {Pool} = require('pg');
 
 const pool = new Pool({
     connectionString: process.env.PGCONNECTION_STRING,
-    ssl:{
-        rejectUnauthorized: false,
-
-    }
 });
 
 pool.on('error', (error, client) => {
