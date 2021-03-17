@@ -80,7 +80,7 @@ async function fetchData(data) {
             uri: data.avatar
         });
     }
-    let request = await fetch('http://192.168.0.101:8000/users/', {
+    let request = await fetch('http://moviles-proyecto2.herokuapp.com/users/', {
         method: 'POST',
         body: formData,
         headers: {

@@ -15,7 +15,7 @@ Notifications.events().registerNotificationReceivedBackground((notification, com
 })
 
 const completeTask = async (taskId) => {
-  fetch(`http://192.168.0.101:8000/tasks/task/${taskId}`, {
+  fetch(`http://192.168.0.107:8000/tasks/task/${taskId}`, {
     method: 'PUT'
   }).catch(err => {
     console.error(err);
@@ -41,7 +41,7 @@ import { Provider } from 'react-redux';
 import { store, persistor } from './store/store';
 import Toast from 'react-native-toast-message';
 
-const myTheme = {
+const DarkTheme = {
   dark: true,
   colors: {
     primary: '#dbd8e3',

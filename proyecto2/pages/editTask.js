@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ScrollView, Pressable, Platformm, View } from 'react-native';
-import { Input, Button, Icon } from 'react-native-elements';
+import { ScrollView, Pressable } from 'react-native';
+import { Input, Icon } from 'react-native-elements';
 import ImgPicker from '../components/imagePicker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import toast from 'react-native-toast-message';
@@ -120,7 +120,7 @@ function EditTask({ route, navigation }) {
                     })
                 }
             }
-            fetch(`http://192.168.0.101:8000/tasks/task/${taskId}/${type}`, {
+            fetch(`https://moviles-proyecto2.herokuapp.com/tasks/task/${taskId}/${type}`, {
                 method: 'PUT',
                 body: form,
                 headers: {
@@ -170,7 +170,7 @@ function EditTask({ route, navigation }) {
             if (index !== undefined) {
                 if (index === 0) {
                     toast.show({ type: 'info', text1: 'Deleting...', autoHide: true, position: 'bottom' });
-                    fetch(`http://192.168.0.101:8000/tasks/task/${taskId}`, {
+                    fetch(`https://moviles-proyecto2.herokuapp.com/tasks/task/${taskId}`, {
                         method: 'DELETE',
                         headers: {
                             'authToken': token

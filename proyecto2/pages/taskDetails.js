@@ -17,7 +17,7 @@ function TaskDetails({ route, navigation, token }) {
 
     const width = useWindowDimensions().width;
 
-    fetch(`http://192.168.0.101:8000/tasks/task/${taskId}`, {
+    fetch(`https://moviles-proyecto2.herokuapp.com/tasks/task/${taskId}`, {
         method: 'GET',
         headers: {
             'authToken': token
