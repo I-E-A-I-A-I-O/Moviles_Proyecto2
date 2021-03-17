@@ -15,7 +15,8 @@ Notifications.events().registerNotificationReceivedBackground((notification, com
 })
 
 const completeTask = async (taskId) => {
-  fetch(`http://192.168.0.107:8000/tasks/task/${taskId}`, {
+
+  fetch(`https://moviles-proyecto2.herokuapp.com/tasks/task/${taskId}`, {
     method: 'PUT'
   }).catch(err => {
     console.error(err);
@@ -59,18 +60,18 @@ const App: () => React$Node = () => {
 
   return (
     <>
-    <Provider store={store} >
-      <PersistGate loading={null} persistor={persistor} >
-        <NavigationContainer theme={DarkTheme}>
-          <Stack.Navigator initialRouteName='login' >
-            <Stack.Screen name={'Login'} component={Login} options={{ title: '' }} />
-            <Stack.Screen name={'Register'} component={Register} options={{ title: 'Create a new account' }} />
-            <Stack.Screen name={'ModalsStack'} component={ModalsStack} options={{ headerShown: false }} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </PersistGate>
-    </Provider>
-    <Toast autoHide={false} ref={(ref) => Toast.setRef(ref)} />
+      <Provider store={store} >
+        <PersistGate loading={null} persistor={persistor} >
+          <NavigationContainer theme={myTheme}>
+            <Stack.Navigator initialRouteName='login' >
+              <Stack.Screen name={'Login'} component={Login} options={{ title: '' }} />
+              <Stack.Screen name={'Register'} component={Register} options={{ title: 'Create a new account' }} />
+              <Stack.Screen name={'ModalsStack'} component={ModalsStack} options={{ headerShown: false }} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </PersistGate>
+      </Provider>
+      <Toast autoHide={false} ref={(ref) => Toast.setRef(ref)} />
     </>
   );
 };
