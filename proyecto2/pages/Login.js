@@ -19,7 +19,7 @@ class loginPage extends React.Component {
     }
 
     fetchProfile = async (token) => {
-        let response = await fetch('http://192.168.0.101:8000/users/user', {
+        let response = await fetch('https://moviles-proyecto2.herokuapp.com/users/user', {
             method: 'GET',
             headers: {
                 'authToken': token
@@ -120,7 +120,7 @@ async function loginRequest(data) {
     let formData = new FormData();
     formData.append('name', data.name);
     formData.append('password', data.password);
-    let response = await fetch('http://192.168.0.101:8000/users/user', {
+    let response = await fetch('https://moviles-proyecto2.herokuapp.com/users/user', {
         method: 'POST',
         body: formData
     }).catch(err => {

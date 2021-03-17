@@ -47,7 +47,7 @@ function Dashboard({ route, navigation, sessionToken, reduxSavePinned, reduxSave
             pinned: state.pinnedTasks,
             tasks: state.tasksData
         }
-        fetch('http://192.168.0.101:8000/tasks', {
+        fetch('https://moviles-proyecto2.herokuapp.com/tasks', {
             method: 'PUT',
             body: JSON.stringify(data),
             headers: {
