@@ -1,24 +1,13 @@
 import React, { useState } from 'react';
-import { ScrollView, Pressable, Platformm, View } from 'react-native';
-import { Input, Button, Icon } from 'react-native-elements';
+import { ScrollView, Pressable } from 'react-native';
+import { Input, Icon } from 'react-native-elements';
 import ImgPicker from '../components/imagePicker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import toast from 'react-native-toast-message';
 import Pushwoosh from 'pushwoosh-react-native-plugin';
 import ActionSheet from 'react-native-action-sheet';
-import { connect } from 'react-redux';
-import { saveUserStats } from '../actions/saveUserStats';
-import { fetchStats } from '../components/fetchStats'
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        reduxSaveStats: (stats) => {
-            dispatch(saveUserStats(stats));
-        }
-    }
-}
-
-function EditTask({ route, navigation, reduxSaveStats }) {
+function EditTask({ route, navigation }) {
 
     const {
         taskId,
@@ -188,9 +177,6 @@ function EditTask({ route, navigation, reduxSaveStats }) {
                         }
                     }).then(response => response.json())
                         .then(json => {
-                            fetchStats(token).then(data => {
-                                reduxSaveStats(data);
-                            })
                             toast.show({ type: json.title, text1: json.content, autoHide: true, position: 'bottom' });
                             navigation.navigate('userPages', { screen: 'Dashboard', params: { refreshOnEnter: taskId } });
                         }).catch(err => {
@@ -379,4 +365,4 @@ function EditTask({ route, navigation, reduxSaveStats }) {
     )
 }
 
-export default connect(null, mapDispatchToProps)(EditTask);
+export default EditTask;

@@ -10,9 +10,11 @@ import { pinnedToNormal } from '../actions/pinnedToNormal';
 import { savePinnedTasks } from '../actions/savePinnedTasks';
 import { store } from '../store/store';
 import { connect } from 'react-redux';
+import { saveUserStats } from '../actions/saveUserStats';
+import { fetchStats } from '../components/fetchStats'
 
 function Dashboard({ route, navigation, sessionToken, reduxSavePinned, reduxSaveReorder,
-    reduxToPinned, reduxToNormal, tasks, pinned
+    reduxToPinned, reduxToNormal, tasks, pinned, reduxSaveStats
 }) {
 
     const [loading, setLoading] = useState(false);
@@ -34,6 +36,9 @@ function Dashboard({ route, navigation, sessionToken, reduxSavePinned, reduxSave
         if (results) {
             reduxSavePinned(results.content.pinned);
             reduxSaveReorder(results.content.tasks);
+            fetchStats(sessionToken).then(data => {
+                reduxSaveStats(data);
+            })
             ToastAndroid.show('Tasks updated.', ToastAndroid.SHORT);
         }
         else {
@@ -185,6 +190,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         reduxToNormal: (taskId) => {
             dispatch(pinnedToNormal(taskId));
+        },
+        reduxSaveStats: (stats) => {
+            dispatch(saveUserStats(stats));
         }
     }
 }
