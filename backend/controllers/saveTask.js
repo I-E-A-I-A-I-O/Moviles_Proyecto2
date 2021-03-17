@@ -77,6 +77,7 @@ const insertTaskData = async (userId, pushToken, data, file = null, res) => {
         getClient().sendMessage(data.name, [pushToken], { send_date: `${data.date} ${data.time}`, timezone: 'America/Caracas', data: { task_id: result.rows[0].task_id } }, (error, response) => {
             if (!error) {
                 if (response.description) {
+                    console.error(JSON.stringify(response));
                     client.query('ROLLBACK', []);
                     res.status(403).json({ title: 'error', content: 'Invalid date' });
                 }
