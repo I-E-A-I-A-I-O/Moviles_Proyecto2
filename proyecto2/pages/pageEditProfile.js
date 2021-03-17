@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, ToastAndroid } from 'react-native';
 import { Card, Input, Button } from 'react-native-elements';
 import ImagePicker from '../components/imagePicker';
+import {connect} from 'react-redux';
 
 function pageEditProfile({sessionToken}) {
     let [name, setName] = useState('');
@@ -75,7 +76,7 @@ async function fetchData(data) {
             uri: data.avatar
         });
     }
-    let request = await fetch('http://192.168.0.101:8000/users/editProfile', {
+    let request = await fetch('http://192.168.0.107:8000/users/editProfile', {
         method: 'POST',
         body: formData,
         headers: {

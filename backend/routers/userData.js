@@ -3,7 +3,7 @@ const router = express.Router();
 
 const {getUserProfile} = require('../controllers/userProfile');
 const { editProfile} = require('../controllers/dataProfile');
-const {userStats} = require('../controllers/stastsUser')
+const {userStats} = require('../controllers/userStasts')
 
 router.get('/user', getUserProfile);
 router.post('/editProfile', editProfile);
