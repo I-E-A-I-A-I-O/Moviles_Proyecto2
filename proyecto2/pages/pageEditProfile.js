@@ -4,26 +4,25 @@ import { Card, Input, Button } from 'react-native-elements';
 import ImagePicker from '../components/imagePicker';
 import { connect } from 'react-redux';
 
-function pageEditProfile({ sessionToken }) {
+function pageEditProfile({ sessionToken, userData }) {
     let [name, setName] = useState('');
     let [password, setPassword] = useState('');
     let [email, setEmail] = useState('');
-    let [buttonTitle, setButtonTitle] = useState('Register');
+    let [buttonTitle, setButtonTitle] = useState('Save Changes');
     let [loading, setLoading] = useState(false);
     let [fileURI, setFileURI] = useState(null);
     let [type, setType] = useState('jpg');
 
     const fileInput = (data) => {
         setType(data.type);
-        setFileURI(data.uri);
+        setFileURI(data.fileInput);
     }
 
     return (
         <ScrollView>
             <Card containerStyle={{ backgroundColor: '#1F262A', borderColor: 'black' }} >
 
-                <ImagePicker onInput={fileInput} />
-                <Card.Divider />
+            <ImagePicker onInput={fileInput} />
                 <Input
                     onChange={(e) => {
                         setName(e.nativeEvent.text);
@@ -52,13 +51,14 @@ function pageEditProfile({ sessionToken }) {
                         type: type
                     }
                     fetchData(data).then(json => {
-                        setButtonTitle('Register');
+                        setButtonTitle('Save Changes');
                         setLoading(false);
                         ToastAndroid.showWithGravity(json.content, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                     });
                 }} icon={<ActivityIndicator color={'lime'} animating={loading} />}
                     disabled={loading}
                 />
+
             </Card>
         </ScrollView>
     );
@@ -81,10 +81,12 @@ async function fetchData(data) {
         body: formData,
         headers: {
             'authToken': data.sessionToken,
-            "Content-Type": "multipart/form-data",
-            "Accept": "application/json"
+            'Content-Type': 'multipart/form-data',
+            'Accept': 'application/json'
         }
-    })
+    }).catch(err => {
+        console.log("ESTO ES UN ERROR"+err);
+    });
     return await request.json();
 }
 
@@ -96,9 +98,9 @@ const styles = {
 
 const mapStateToProps = (state) => {
     return {
-        sessionToken: state.sessionToken
+        sessionToken: state.sessionToken,
+        userData: state.userData
     }
 }
 
 export default connect(mapStateToProps, null)(pageEditProfile);
-

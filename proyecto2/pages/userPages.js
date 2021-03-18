@@ -39,9 +39,9 @@ function UserPages({ navigation }) {
             ),
           }
         }
-      />
-       
+      />  
     </Tab.Navigator>
+
   )
 }
 

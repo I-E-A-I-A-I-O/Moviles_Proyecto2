@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 
 
 const editProfile = async (req,res) => {
+    console.log('Hola Mundo')
     let token = req.headers.authtoken;
     let verified = await tokenVerifier.verifyToken(token);
     if (verified.connected){
@@ -18,17 +19,20 @@ const editProfile = async (req,res) => {
                 let {name, email, password} = fields;
                 name = name[0];
                 password = password[0];
-                email = email[0];
-                let salt = bcrypt.genSaltSync();
-                password = bcrypt.hashSync(password, salt);
-                saveUserData(verified.id, name, email, password, files).then(result => {
-                    if (result.result){
-                        res.status(200).json({title: 'Success', content: result});
-                    }
-                    else{
-                        res.status(403).json({title: 'Error', content: "Error loading Data"});
-                    }
-                })
+                email = email[0];               
+                let fieldVerify = verifyFields(name, email, password, confirm);
+                if (fieldVerify !== 'OK.'){
+                    res.status(400).json({title: 'Error', content: fieldVerify});
+                }else{                
+                    saveUserData(verified.id, name, email, password, files).then(result => {
+                        if (result.result){
+                            res.status(200).json({title: 'Success', content: result});
+                        }
+                        else{
+                            res.status(403).json({title: 'Error', content: "Error loading Data"});
+                        }
+                    })
+                }
             }
         });
     }
@@ -78,7 +82,8 @@ const updateUserData = async (id, name, email, password, avatarPath = null) => {
     let client = await db.getClient();
     let query = '';
     let params = [];
-   
+    let salt = bcrypt.genSaltSync();
+    password = bcrypt.hashSync(password, salt);
     if (avatarPath){
         query = "UPDATE users SET name = $1, email = $2, password = $3, avatar = $4 WHERE users_id = $5";
         params = [name, email, password, avatarPath, id];
@@ -95,6 +100,21 @@ const updateUserData = async (id, name, email, password, avatarPath = null) => {
         return false;
     }finally{
         client.release();
+    }
+}
+
+const verifyFields = (name, email, password) => {
+    if (name.length < 1 || email.length < 1 || password.length < 1 ){
+        return 'One or more fields empty.';
+    }
+    else if (name.length < 3 || name.length > 25){
+        return 'Name must be between 3 and 25 characters.';
+    }
+    else if (password.length < 5 || password.length > 30){
+        return 'Passwords must be between 5 and 30 characters.';
+    }
+    else{
+        return 'OK.';
     }
 }
 

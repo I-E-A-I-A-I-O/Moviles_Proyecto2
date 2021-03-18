@@ -67,7 +67,7 @@ class pageProfile extends React.Component {
                     <Button
                         title={'Edit Profile'}
                         onPress={() => {
-                            navigation.navigate('pageEditProfile');
+                            this.props.navigation.navigate('pageEditProfile');
                         }}>
                     </Button>
 
@@ -95,9 +95,15 @@ class pageProfile extends React.Component {
                     chartConfig={chartConfig}
                     verticalLabelRotation={0}
                 />
+                <Card containerStyle={{ backgroundColor: '#1F262A', borderColor: '#1F262A' }} >
+                    <Button title={'Log Out'} onPress={()=>{
+                        this.props.navigation.navigate('Login')
+                    }}/>
+                </Card>
             </ScrollView>
         )
     }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(pageProfile);
+

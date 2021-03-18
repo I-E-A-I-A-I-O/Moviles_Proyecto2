@@ -18,6 +18,7 @@ Notifications.events().registerNotificationOpened((notification, completion) => 
 })
 
 const completeTask = async (taskId) => {
+
   fetch(`https://moviles-proyecto2.herokuapp.com/tasks/task/${taskId}`, {
     method: 'PUT'
   }).catch(err => {
@@ -44,7 +45,7 @@ import { Provider } from 'react-redux';
 import { store, persistor } from './store/store';
 import Toast from 'react-native-toast-message';
 
-const myTheme = {
+const DarkTheme = {
   dark: true,
   colors: {
     primary: '#dbd8e3',
